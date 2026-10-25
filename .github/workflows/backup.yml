@@ -1,0 +1,47 @@
+name: Monthly backup to Parquet
+
+on:
+  schedule:
+    # 9:17 UTC on the 1st of every month: back up the month that just ended.
+    - cron: "17 9 1 * *"
+  workflow_dispatch:
+    inputs:
+      month:
+        description: "Month to back up (YYYY-MM). Leave blank for the previous month."
+        required: false
+
+permissions:
+  contents: write   # lets the workflow commit the backup files
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Export snapshots
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: |
+          if [ -n "${{ inputs.month }}" ]; then
+            python collector/backup.py --month "${{ inputs.month }}"
+          else
+            python collector/backup.py
+          fi
+
+      - name: Commit backup
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/
+          git diff --cached --quiet || git commit -m "Backup price snapshots"
+          git push

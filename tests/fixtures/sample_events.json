@@ -1,0 +1,73 @@
+{
+  "meta": {"total": 6, "page": 1, "per_page": 100},
+  "events": [
+    {
+      "id": 7001,
+      "type": "nba",
+      "title": "Golden State Warriors at Los Angeles Lakers",
+      "datetime_utc": "2026-10-26T02:30:00",
+      "time_tbd": false,
+      "url": "https://seatgeek.com/warriors-at-lakers-tickets/7001",
+      "venue": {"name": "Crypto.com Arena", "city": "Los Angeles", "state": "CA"},
+      "performers": [
+        {"name": "Los Angeles Lakers", "home_team": true},
+        {"name": "Golden State Warriors", "away_team": true}
+      ],
+      "taxonomies": [{"name": "sports"}, {"name": "basketball"}, {"name": "nba"}],
+      "stats": {"lowest_price": 142.5, "lowest_sg_base_price": 118, "median_price": 265,
+                "average_price": 310.4, "highest_price": 4200, "listing_count": 812,
+                "visible_listing_count": 790}
+    },
+    {
+      "id": 7002,
+      "type": "nba",
+      "title": "Phoenix Suns at LA Clippers",
+      "datetime_utc": "2026-10-29T03:00:00",
+      "url": "https://seatgeek.com/suns-at-clippers-tickets/7002",
+      "venue": {"name": "Intuit Dome", "city": "Inglewood", "state": "CA"},
+      "performers": [
+        {"name": "LA Clippers", "home_team": true},
+        {"name": "Phoenix Suns", "away_team": true}
+      ],
+      "taxonomies": [{"name": "nba"}],
+      "stats": {"lowest_price": 38, "lowest_sg_base_price": 29, "median_price": 96,
+                "average_price": 120, "highest_price": 2100, "listing_count": 640}
+    },
+    {
+      "id": 7003,
+      "type": "nba",
+      "title": "Boston Celtics at New York Knicks",
+      "datetime_utc": "2026-11-12T00:30:00",
+      "url": "https://seatgeek.com/celtics-at-knicks-tickets/7003",
+      "venue": {"name": "Madison Square Garden", "city": "New York", "state": "NY"},
+      "performers": [],
+      "taxonomies": [{"name": "nba"}],
+      "stats": {"lowest_price": 210, "median_price": 455, "listing_count": 1020}
+    },
+    {
+      "id": 7004,
+      "type": "parking",
+      "title": "PARKING: Golden State Warriors at Los Angeles Lakers",
+      "datetime_utc": "2026-10-26T02:30:00",
+      "taxonomies": [{"name": "parking"}, {"name": "nba"}],
+      "stats": {"lowest_price": 45}
+    },
+    {
+      "id": 7005,
+      "type": "nba",
+      "title": "Denver Nuggets at Utah Jazz",
+      "datetime_utc": "2026-10-25T02:00:00",
+      "venue": {"name": "Delta Center", "city": "Salt Lake City", "state": "UT"},
+      "taxonomies": [{"name": "nba"}],
+      "stats": {"lowest_price": 12, "listing_count": 300}
+    },
+    {
+      "id": 7001,
+      "type": "nba",
+      "title": "Golden State Warriors at Los Angeles Lakers",
+      "datetime_utc": "2026-10-26T02:30:00",
+      "taxonomies": [{"name": "nba"}],
+      "stats": {"lowest_price": 142.5}
+    }
+  ]
+}
