@@ -258,8 +258,9 @@ def main() -> int:
     else:
         client_id = os.environ.get("SEATGEEK_CLIENT_ID")
         if not client_id:
-            print("SEATGEEK_CLIENT_ID is not set.", file=sys.stderr)
-            return 1
+            # Not an error: the client ID just hasn't been approved yet.
+            print("SEATGEEK_CLIENT_ID isn't set yet, so there's nothing to collect. Skipping.")
+            return 0
         events = fetch_events(client_id, now)
 
     games, snapshots, skipped = build_rows(events, now, args.force)

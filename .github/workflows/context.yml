@@ -1,0 +1,32 @@
+name: Collect NBA schedule and injuries
+
+on:
+  schedule:
+    # 8:13am and 4:13pm Pacific-ish (15:13 and 23:13 UTC): morning results,
+    # then the afternoon injury report before evening games.
+    - cron: "13 15,23 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: context
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Collect schedule, results, and injuries
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python collector/context.py

@@ -1,0 +1,53 @@
+{
+  "_embedded": {
+    "events": [
+      {
+        "id": "vvG1A",
+        "name": "Los Angeles Lakers vs. Golden State Warriors",
+        "url": "https://www.ticketmaster.com/event/vvG1A",
+        "dates": {"start": {"localDate": "2026-10-25", "dateTime": "2026-10-26T02:30:00Z"}, "status": {"code": "onsale"}},
+        "classifications": [{"segment": {"name": "Sports"}, "genre": {"name": "Basketball"}, "subGenre": {"name": "NBA"}}],
+        "priceRanges": [{"type": "standard", "currency": "USD", "min": 89.0, "max": 1450.0},
+                        {"type": "standard including fees", "currency": "USD", "min": 104.5, "max": 1620.0}],
+        "_embedded": {
+          "venues": [{"name": "Crypto.com Arena", "city": {"name": "Los Angeles"}, "state": {"stateCode": "CA"}}],
+          "attractions": [{"name": "Los Angeles Lakers"}, {"name": "Golden State Warriors"}]
+        }
+      },
+      {
+        "id": "vvG2B",
+        "name": "LA Clippers vs. Phoenix Suns",
+        "dates": {"start": {"dateTime": "2026-10-29T03:00:00Z"}, "status": {"code": "onsale"}},
+        "classifications": [{"genre": {"name": "Basketball"}, "subGenre": {"name": "NBA"}}],
+        "_embedded": {"venues": [{"name": "Intuit Dome", "city": {"name": "Inglewood"}, "state": {"stateCode": "CA"}}]}
+      },
+      {
+        "id": "vvG3C",
+        "name": "PARKING: Los Angeles Lakers vs. Golden State Warriors",
+        "dates": {"start": {"dateTime": "2026-10-26T02:30:00Z"}},
+        "classifications": [{"subGenre": {"name": "NBA"}}]
+      },
+      {
+        "id": "vvG4D",
+        "name": "Lakers Courtside Club Premium Experience",
+        "dates": {"start": {"dateTime": "2026-10-26T02:30:00Z"}},
+        "classifications": [{"subGenre": {"name": "NBA"}}]
+      },
+      {
+        "id": "vvG5E",
+        "name": "Boston Celtics at Toronto Raptors",
+        "dates": {"start": {"dateTime": "2026-11-12T00:30:00Z"}, "status": {"code": "offsale"}},
+        "classifications": [{"subGenre": {"name": "NBA"}}],
+        "priceRanges": [{"type": "standard", "currency": "CAD", "min": 55, "max": 900}],
+        "_embedded": {"venues": [{"name": "Scotiabank Arena", "city": {"name": "Toronto"}}]}
+      },
+      {
+        "id": "vvG6F",
+        "name": "Denver Nuggets vs. Utah Jazz",
+        "dates": {"start": {"dateTime": "2026-10-25T02:00:00Z"}},
+        "classifications": [{"subGenre": {"name": "NBA"}}]
+      }
+    ]
+  },
+  "page": {"size": 200, "totalElements": 6, "totalPages": 1, "number": 0}
+}

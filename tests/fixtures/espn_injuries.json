@@ -1,0 +1,25 @@
+{
+  "injuries": [
+    {
+      "id": "13",
+      "displayName": "Los Angeles Lakers",
+      "injuries": [
+        {"status": "Out", "date": "2026-10-24T18:00Z", "shortComment": "Out Sunday vs. Golden State.",
+         "athlete": {"displayName": "Player One"},
+         "type": {"description": "out"},
+         "details": {"type": "Ankle", "detail": "Sprain", "side": "Left", "returnDate": "2026-11-01"}},
+        {"status": "Day-To-Day", "date": "2026-10-25T01:00Z",
+         "athlete": {"displayName": "Player Two"},
+         "details": {"type": "Knee"}}
+      ]
+    },
+    {
+      "id": "9",
+      "displayName": "Golden State Warriors",
+      "injuries": [
+        {"status": "Questionable", "athlete": {"displayName": "Player Three"}, "type": {"description": "questionable"}},
+        {"status": "Out", "athlete": {}}
+      ]
+    }
+  ]
+}
