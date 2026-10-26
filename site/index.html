@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tixcast</title>
+<meta name="description" content="Tixcast watches resale prices for every NBA game and tells you whether to buy your tickets now or wait.">
+<meta property="og:title" content="Tixcast">
+<meta property="og:description" content="Know when to buy NBA tickets. Join the waitlist.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --maple: #E3B87C;
+    --maple-deep: #D6A464;
+    --navy: #14203A;
+    --navy-soft: #2A3858;
+    --paint: #2457A6;
+    --clock: #E3342F;
+    --line: #FFFFFF;
+    --display: "Big Shoulders Display", "Arial Narrow", sans-serif;
+    --body: "Public Sans", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--maple);
+    color: var(--navy);
+    font-family: var(--body);
+    font-size: 17px;
+    line-height: 1.6;
+  }
+  a { color: var(--navy); }
+  :focus-visible { outline: 3px solid var(--paint); outline-offset: 3px; }
+
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+
+  header.top { padding: 22px 0; }
+  .logo {
+    font-family: var(--display);
+    font-weight: 900;
+    font-size: 30px;
+    letter-spacing: 0.01em;
+    text-decoration: none;
+    color: var(--navy);
+  }
+  .logo span { color: var(--clock); }
+
+  /* Hero */
+  .hero { position: relative; overflow: hidden; padding: 40px 0 88px; }
+  .court-arc {
+    position: absolute; right: -180px; top: -120px;
+    width: 760px; height: 760px; pointer-events: none;
+  }
+  .hero-grid {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: 56px;
+    align-items: center;
+  }
+  h1 {
+    font-family: var(--display);
+    font-weight: 900;
+    font-size: clamp(56px, 8.4vw, 112px);
+    line-height: 0.9;
+    letter-spacing: -0.005em;
+    margin: 0 0 24px;
+    max-width: 9ch;
+  }
+  .lede { font-size: 20px; max-width: 30em; margin: 0 0 32px; }
+
+  /* Waitlist form */
+  form.waitlist { max-width: 480px; }
+  .field-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .field-row input, .field-row select {
+    font: inherit; font-size: 16px;
+    height: 52px; padding: 0 16px;
+    border: 2px solid var(--navy);
+    border-radius: 6px;
+    background: var(--line);
+    color: var(--navy);
+  }
+  .field-row input { flex: 1 1 220px; min-width: 0; }
+  .field-row select { flex: 1 1 100%; }
+  button.join {
+    flex: 1 1 100%;
+    height: 54px;
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: 22px;
+    letter-spacing: 0.02em;
+    color: var(--line);
+    background: var(--navy);
+    border: 2px solid var(--navy);
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  button.join:hover { background: var(--navy-soft); }
+  button.join:disabled { cursor: wait; }
+  .form-note { font-size: 14px; margin: 10px 0 0; color: var(--navy-soft); }
+  .form-msg { font-size: 15px; font-weight: 600; margin: 12px 0 0; min-height: 1.4em; }
+  .form-msg.error { color: #A3221E; }
+  .form-msg.ok { color: var(--navy); }
+
+  /* Shot clock board */
+  .board {
+    background: var(--navy);
+    color: var(--line);
+    border-radius: 14px;
+    padding: 26px 28px 24px;
+    border: 4px solid var(--line);
+  }
+  .board-game { font-weight: 600; font-size: 16px; margin: 0; }
+  .board-sub { font-size: 14px; color: #B9C3D9; margin: 2px 0 18px; }
+  .board-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; }
+  .readout { font-family: var(--display); font-weight: 900; line-height: 0.85; font-variant-numeric: tabular-nums; }
+  .price { font-size: 104px; color: var(--clock); }
+  .days { font-size: 56px; color: var(--line); text-align: right; }
+  .readout-label { font-size: 13px; color: #B9C3D9; margin-top: 8px; }
+  .verdict {
+    margin-top: 22px;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    border-top: 2px solid var(--navy-soft);
+    padding-top: 16px;
+  }
+  .verdict-call {
+    font-family: var(--display); font-weight: 900; font-size: 34px; letter-spacing: 0.03em;
+    padding: 2px 14px; border-radius: 6px;
+    background: var(--line); color: var(--navy);
+  }
+  .verdict-call.buy { background: var(--clock); color: var(--line); }
+  .verdict-why { font-size: 14px; color: #D7DDEA; margin: 0; max-width: 24em; }
+  .board-caption { font-size: 13px; margin: 12px 4px 0; color: var(--navy-soft); }
+
+  /* Sections */
+  section.block { border-top: 3px solid var(--line); padding: 72px 0; }
+  h2 {
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: clamp(38px, 5vw, 56px);
+    line-height: 1;
+    margin: 0 0 32px;
+    max-width: 16ch;
+  }
+  .steps { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px; }
+  .step-num { font-family: var(--display); font-weight: 900; font-size: 64px; line-height: 1; color: var(--paint); }
+  .steps h3 { font-family: var(--display); font-weight: 800; font-size: 28px; margin: 8px 0 8px; }
+  .steps p { margin: 0; max-width: 26em; }
+
+  .why { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 56px; align-items: start; }
+  .why p { margin: 0 0 16px; max-width: 34em; }
+  .why-chart { background: var(--maple-deep); border-radius: 10px; padding: 20px 20px 12px; }
+  .why-chart svg { width: 100%; height: auto; display: block; }
+  .why-chart p { font-size: 13px; margin: 8px 0 0; color: var(--navy-soft); }
+
+  .faq dl { margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 56px; }
+  .faq dt { font-weight: 600; font-size: 18px; margin-bottom: 6px; }
+  .faq dd { margin: 0; max-width: 32em; }
+
+  footer { border-top: 3px solid var(--line); padding: 28px 0 40px; font-size: 14px; color: var(--navy-soft); }
+  footer p { margin: 0 0 6px; }
+
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  @media (max-width: 860px) {
+    .hero { padding-bottom: 64px; }
+    .hero-grid, .why { grid-template-columns: minmax(0, 1fr); gap: 40px; }
+    .steps, .faq dl { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+    .court-arc { right: -340px; top: -200px; }
+    section.block { padding: 56px 0; }
+    .price { font-size: 84px; }
+    .days { font-size: 46px; }
+  }
+  @media (max-width: 420px) {
+    .wrap { padding: 0 16px; }
+    .board { padding: 22px 20px 20px; }
+    .price { font-size: 72px; }
+    .verdict { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap"><a class="logo" href="/">Tix<span>cast</span></a></div>
+</header>
+
+<main>
+  <section class="hero">
+    <svg class="court-arc" viewBox="0 0 760 760" aria-hidden="true">
+      <circle cx="380" cy="380" r="300" fill="none" stroke="#FFFFFF" stroke-width="5"/>
+      <circle cx="380" cy="380" r="110" fill="none" stroke="#FFFFFF" stroke-width="5"/>
+    </svg>
+    <div class="wrap hero-grid">
+      <div>
+        <h1>Stop overpaying for NBA tickets.</h1>
+        <p class="lede">Tixcast watches resale prices for every NBA game and tells you whether to buy now or wait for the price to drop.</p>
+
+        <form class="waitlist" id="waitlist" novalidate>
+          <div class="field-row">
+            <label class="sr-only" for="email">Email</label>
+            <input id="email" name="email" type="email" autocomplete="email" placeholder="you@email.com" required>
+            <label class="sr-only" for="team">Team you go see most</label>
+            <select id="team" name="team">
+              <option value="">Team you go see most (optional)</option>
+            </select>
+            <button class="join" type="submit">Join the waitlist</button>
+          </div>
+          <p class="form-msg" id="form-msg" role="status" aria-live="polite"></p>
+          <p class="form-note">Free during the beta. Starting with Lakers and Clippers home games. We'll only email you about Tixcast.</p>
+        </form>
+      </div>
+
+      <div>
+        <div class="board" aria-label="Example forecast for a Lakers home game">
+          <p class="board-game">Warriors at Lakers</p>
+          <p class="board-sub">Upper level, 2 tickets</p>
+          <div class="board-row">
+            <div>
+              <div class="readout price" id="clock-price">$164</div>
+              <div class="readout-label">Cheapest price</div>
+            </div>
+            <div>
+              <div class="readout days" id="clock-days">14</div>
+              <div class="readout-label">Days to tip-off</div>
+            </div>
+          </div>
+          <div class="verdict">
+            <span class="verdict-call" id="clock-call">WAIT</span>
+            <p class="verdict-why" id="clock-why">Listings are growing and prices for this game usually drop in the final week.</p>
+          </div>
+        </div>
+        <p class="board-caption">Example of a Tixcast forecast. Prices shown are illustrative.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <h2>How it works</h2>
+      <ol class="steps">
+        <li>
+          <div class="step-num" aria-hidden="true">1</div>
+          <h3>Pick a game</h3>
+          <p>Choose the game and how many seats you need. Tixcast pulls the current resale price and how it has moved since tickets went on sale.</p>
+        </li>
+        <li>
+          <div class="step-num" aria-hidden="true">2</div>
+          <h3>Get a call</h3>
+          <p>See whether to buy now or wait, how likely the price is to drop, and the risk if you hold off too long.</p>
+        </li>
+        <li>
+          <div class="step-num" aria-hidden="true">3</div>
+          <h3>Buy at the right time</h3>
+          <p>Set a target price and get a text or notification when it's time. Then buy on the marketplace you already use.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap why">
+      <div>
+        <h2>Waiting usually pays. Except when it doesn't.</h2>
+        <p>Economists who study resale markets have found that prices for the same seats tend to fall as game day gets closer, because sellers would rather take less than end up with a ticket nobody can use.</p>
+        <p>But it isn't a rule. A star returns from injury, a rivalry heats up, or the cheap seats sell out, and prices jump. Tixcast tracks every game across the league so it can tell the two apart.</p>
+      </div>
+      <div class="why-chart">
+        <svg viewBox="0 0 420 220" role="img" aria-labelledby="chart-title chart-desc">
+          <title id="chart-title">Two possible price paths before a game</title>
+          <desc id="chart-desc">One line shows a typical game where the cheapest price falls steadily toward tip-off. A second line shows a game where the price jumps in the final days.</desc>
+          <line x1="30" y1="190" x2="410" y2="190" stroke="#14203A" stroke-width="2"/>
+          <line x1="30" y1="20" x2="30" y2="190" stroke="#14203A" stroke-width="2"/>
+          <polyline points="30,60 95,66 160,74 225,88 290,108 350,132 405,150" fill="none" stroke="#2457A6" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+          <polyline points="30,90 95,92 160,98 225,102 290,96 350,62 405,34" fill="none" stroke="#E3342F" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+          <text x="404" y="172" text-anchor="end" font-family="Public Sans, sans-serif" font-size="14" font-weight="600" fill="#2457A6">Typical game: wait</text>
+          <text x="340" y="30" text-anchor="end" font-family="Public Sans, sans-serif" font-size="14" font-weight="600" fill="#A3221E">Star returns: buy early</text>
+          <text x="30" y="210" font-family="Public Sans, sans-serif" font-size="13" fill="#2A3858">Tickets on sale</text>
+          <text x="410" y="210" text-anchor="end" font-family="Public Sans, sans-serif" font-size="13" fill="#2A3858">Tip-off</text>
+        </svg>
+        <p>Illustration, not real data.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block faq">
+    <div class="wrap">
+      <h2>Questions</h2>
+      <dl>
+        <div>
+          <dt>Does Tixcast sell tickets?</dt>
+          <dd>No. It tells you when to buy, then sends you to marketplaces like SeatGeek and StubHub to check out. We may earn a small referral fee when you do, at no cost to you.</dd>
+        </div>
+        <div>
+          <dt>Which games does it cover?</dt>
+          <dd>We track every NBA game. The beta starts with Lakers and Clippers home games, with more teams soon after.</dd>
+        </div>
+        <div>
+          <dt>Is it free?</dt>
+          <dd>Yes, during the beta. Waitlist members get in first.</dd>
+        </div>
+        <div>
+          <dt>How accurate is it?</dt>
+          <dd>We'll publish how our calls perform against simply waiting until game day, so you can judge for yourself. Every forecast shows its odds, not just a verdict.</dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Tixcast isn't affiliated with the NBA, its teams, or any ticket marketplace.</p>
+    <p>Made in Los Angeles.</p>
+  </div>
+</footer>
+
+<script>
+  // Fill these in from Supabase: Project Settings -> API.
+  // The anon key is meant to be public; the waitlist table only allows inserts.
+  const SUPABASE_URL = "YOUR_SUPABASE_URL";
+  const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+
+  const TEAMS = ["Atlanta Hawks","Boston Celtics","Brooklyn Nets","Charlotte Hornets","Chicago Bulls","Cleveland Cavaliers","Dallas Mavericks","Denver Nuggets","Detroit Pistons","Golden State Warriors","Houston Rockets","Indiana Pacers","LA Clippers","Los Angeles Lakers","Memphis Grizzlies","Miami Heat","Milwaukee Bucks","Minnesota Timberwolves","New Orleans Pelicans","New York Knicks","Oklahoma City Thunder","Orlando Magic","Philadelphia 76ers","Phoenix Suns","Portland Trail Blazers","Sacramento Kings","San Antonio Spurs","Toronto Raptors","Utah Jazz","Washington Wizards"];
+  const teamSelect = document.getElementById("team");
+  TEAMS.forEach(t => { const o = document.createElement("option"); o.value = t; o.textContent = t; teamSelect.appendChild(o); });
+
+  const form = document.getElementById("waitlist");
+  const email = document.getElementById("email");
+  const msg = document.getElementById("form-msg");
+  const button = form.querySelector("button");
+  const configured = !SUPABASE_URL.startsWith("YOUR_") && !SUPABASE_ANON_KEY.startsWith("YOUR_");
+
+  function show(text, kind) { msg.textContent = text; msg.className = "form-msg " + kind; }
+  email.addEventListener("input", () => { if (msg.classList.contains("error")) show("", ""); });
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const value = email.value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+      show("Enter a valid email address.", "error");
+      email.focus();
+      return;
+    }
+    if (!configured) {
+      show("Preview only: connect Supabase to save signups.", "ok");
+      return;
+    }
+    button.disabled = true;
+    button.textContent = "Joining";
+    try {
+      const res = await fetch(SUPABASE_URL.replace(/\/$/, "") + "/rest/v1/waitlist", {
+        method: "POST",
+        headers: {
+          "apikey": SUPABASE_ANON_KEY,
+          "Authorization": "Bearer " + SUPABASE_ANON_KEY,
+          "Content-Type": "application/json",
+          "Prefer": "return=minimal"
+        },
+        body: JSON.stringify({ email: value.toLowerCase(), team: teamSelect.value || null, source: location.hostname || null })
+      });
+      if (res.ok || res.status === 409) {
+        show("You're on the list. We'll email you when the beta opens.", "ok");
+        form.reset();
+      } else {
+        show("Couldn't save your email. Try again in a minute.", "error");
+      }
+    } catch (err) {
+      show("Couldn't reach the server. Check your connection and try again.", "error");
+    } finally {
+      button.disabled = false;
+      button.textContent = "Join the waitlist";
+    }
+  });
+
+  // One shot-clock sequence on load: the price drifts down as tip-off nears, then the call flips to BUY.
+  (function runClock() {
+    const priceEl = document.getElementById("clock-price");
+    const daysEl = document.getElementById("clock-days");
+    const callEl = document.getElementById("clock-call");
+    const whyEl = document.getElementById("clock-why");
+    const path = [164,161,158,156,151,149,146,140,137,133,128,124,121,118];
+    const finish = () => {
+      priceEl.textContent = "$118"; daysEl.textContent = "1";
+      callEl.textContent = "BUY"; callEl.classList.add("buy");
+      whyEl.textContent = "The price is near its usual low, and listings are starting to thin out.";
+    };
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { finish(); return; }
+    let i = 0;
+    setTimeout(function tick() {
+      if (i >= path.length) { finish(); return; }
+      priceEl.textContent = "$" + path[i];
+      daysEl.textContent = String(14 - i);
+      i++;
+      setTimeout(tick, 230);
+    }, 900);
+  })();
+</script>
+</body>
+</html>
