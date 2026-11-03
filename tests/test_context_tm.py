@@ -116,6 +116,41 @@ def test_season_bounds_and_windows(monkeypatch):
     assert len(out) == len(ranges) == 20                     # Oct 1 - Jun 30 in 14-day windows
 
 
+def test_scoreboard_falls_back_to_single_days(monkeypatch):
+    from datetime import date
+
+    import requests
+
+    calls = []
+
+    def fake_get_json(url, params=None, headers=None):
+        calls.append(dict(params))
+        if "-" in params["dates"]:                           # ESPN rejects ranges
+            resp = requests.Response()
+            resp.status_code = 400
+            raise requests.HTTPError("400 Client Error", response=resp)
+        return {"events": [{"id": params["dates"]}]}
+
+    monkeypatch.setattr(context, "get_json", fake_get_json)
+    monkeypatch.setattr(context.time, "sleep", lambda s: None)
+    out = context.fetch_scoreboard(date(2026, 11, 2))
+    range_calls = [c for c in calls if "-" in c["dates"]]
+    assert len(range_calls) == 2                             # tried both formats once, then gave up on ranges
+    assert len(out) == 273                                   # every day Oct 1, 2026 - Jun 30, 2027
+    assert out[0]["id"] == "20261001" and out[-1]["id"] == "20270630"
+
+
+def test_scoreboard_other_errors_still_raise(monkeypatch):
+    from datetime import date
+
+    def boom(url, params=None, headers=None):
+        raise RuntimeError("network down")
+
+    monkeypatch.setattr(context, "get_json", boom)
+    with pytest.raises(RuntimeError):
+        context.fetch_scoreboard(date(2026, 11, 2))
+
+
 # --- Injuries -------------------------------------------------------------
 
 def test_injury_rows():

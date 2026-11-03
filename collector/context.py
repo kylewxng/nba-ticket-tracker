@@ -55,16 +55,51 @@ def season_bounds(today: date) -> tuple[date, date]:
     return date(start_year, 10, 1), date(start_year + 1, 6, 30)
 
 
+def _scoreboard(params: dict) -> list[dict]:
+    return get_json(SCOREBOARD_URL, params=params, headers=BROWSER_HEADERS).get("events") or []
+
+
+def _is_bad_request(exc: Exception) -> bool:
+    resp = getattr(exc, "response", None)
+    return getattr(resp, "status_code", None) == 400
+
+
 def fetch_scoreboard(today: date) -> list[dict]:
+    """Fetch every game this season.
+
+    Tries a 14-day range per request first (about 20 requests). If ESPN
+    rejects ranges, falls back to one day per request for the rest of the run.
+    """
     start, end = season_bounds(today)
     events: list[dict] = []
+    range_formats = [{"limit": 500}, {}]     # with and without a limit param
+    use_ranges = True
     day = start
     while day <= end:
         stop = min(day + timedelta(days=WINDOW_DAYS - 1), end)
-        params = {"dates": f"{day:%Y%m%d}-{stop:%Y%m%d}", "limit": 1000}
-        events.extend(get_json(SCOREBOARD_URL, params=params, headers=BROWSER_HEADERS).get("events") or [])
+        if use_ranges:
+            got = None
+            for extra in list(range_formats):
+                try:
+                    got = _scoreboard({"dates": f"{day:%Y%m%d}-{stop:%Y%m%d}", **extra})
+                    range_formats = [extra]          # remember what worked
+                    break
+                except Exception as exc:
+                    if not _is_bad_request(exc):
+                        raise
+            if got is None:
+                use_ranges = False                   # ESPN won't take ranges; go day by day
+            else:
+                events.extend(got)
+                day = stop + timedelta(days=1)
+                time.sleep(0.3)
+                continue
+        d = day
+        while d <= stop:
+            events.extend(_scoreboard({"dates": f"{d:%Y%m%d}"}))
+            d += timedelta(days=1)
+            time.sleep(0.2)
         day = stop + timedelta(days=1)
-        time.sleep(0.3)
     return events
 
 
