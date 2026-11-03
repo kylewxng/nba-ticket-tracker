@@ -1,0 +1,41 @@
+{
+  "events": [
+    {"id": "401810001", "date": "2026-10-21T02:30Z", "season": {"year": 2027, "type": 2, "slug": "regular-season"},
+     "competitions": [{
+       "venue": {"fullName": "Crypto.com Arena", "address": {"city": "Los Angeles", "state": "CA"}},
+       "competitors": [
+         {"homeAway": "home", "score": "112", "winner": true, "team": {"abbreviation": "LAL", "displayName": "Los Angeles Lakers"}},
+         {"homeAway": "away", "score": "108", "winner": false, "team": {"abbreviation": "GS", "displayName": "Golden State Warriors"}}],
+       "broadcasts": [{"market": "national", "names": ["TNT"]}, {"market": "home", "names": ["Spectrum SN"]}],
+       "geoBroadcasts": [{"type": {"shortName": "TV"}, "market": {"type": "National"}, "media": {"shortName": "TNT"}}],
+       "status": {"type": {"state": "post", "completed": true, "name": "STATUS_FINAL"}}}]},
+    {"id": "401809999", "date": "2026-10-10T02:00Z", "season": {"year": 2027, "type": 1, "slug": "preseason"},
+     "competitions": [{
+       "competitors": [
+         {"homeAway": "home", "score": "99", "team": {"abbreviation": "PHX", "displayName": "Phoenix Suns"}},
+         {"homeAway": "away", "score": "101", "team": {"abbreviation": "LAC", "displayName": "LA Clippers"}}],
+       "status": {"type": {"state": "post", "completed": true}}}]},
+    {"id": "401810005", "date": "2026-10-22T02:30Z", "season": {"type": 2},
+     "competitions": [{
+       "venue": {"fullName": "Chase Center", "address": {"city": "San Francisco", "state": "CA"}},
+       "competitors": [
+         {"homeAway": "home", "score": "120", "team": {"abbreviation": "GS", "displayName": "Golden State Warriors"}},
+         {"homeAway": "away", "score": "115", "team": {"abbreviation": "LAL", "displayName": "Los Angeles Lakers"}}],
+       "broadcasts": [],
+       "status": {"type": {"state": "post", "completed": true}}}]},
+    {"id": "401810030", "date": "2026-10-26T02:30Z", "season": {"type": 2, "slug": "regular-season"},
+     "competitions": [{
+       "competitors": [
+         {"homeAway": "home", "score": "0", "team": {"abbreviation": "LAL", "displayName": "Los Angeles Lakers"}},
+         {"homeAway": "away", "score": "0", "team": {"abbreviation": "GS", "displayName": "Golden State Warriors"}}],
+       "broadcasts": [{"market": "national", "names": ["ESPN", "ABC"]}],
+       "status": {"type": {"state": "pre", "completed": false}}}]},
+    {"id": "401810030", "date": "2026-10-26T02:30Z", "season": {"type": 2},
+     "competitions": [{"competitors": [
+         {"homeAway": "home", "team": {"abbreviation": "LAL"}}, {"homeAway": "away", "team": {"abbreviation": "GS"}}],
+       "status": {"type": {"state": "pre"}}}]},
+    {"id": "401820001", "date": "2027-04-18T19:00Z", "season": {"type": 3, "slug": "post-season"},
+     "competitions": [{"competitors": [
+         {"homeAway": "home", "team": {"displayName": "TBD"}}, {"homeAway": "away", "team": {"displayName": "TBD"}}]}]}
+  ]
+}

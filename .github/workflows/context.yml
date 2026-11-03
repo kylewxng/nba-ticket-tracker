@@ -2,10 +2,15 @@ name: Collect NBA schedule and injuries
 
 on:
   schedule:
-    # 8:13am and 4:13pm Pacific-ish (15:13 and 23:13 UTC): morning results,
+    # 7:13am and 3:13pm Pacific (15:13 and 23:13 UTC): morning results,
     # then the afternoon injury report before evening games.
     - cron: "13 15,23 * * *"
   workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Fetch and print only, don't write to Supabase"
+        type: boolean
+        default: false
 
 concurrency:
   group: context
@@ -29,4 +34,9 @@ jobs:
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
-        run: python collector/context.py
+        run: |
+          if [ "${{ inputs.dry_run }}" = "true" ]; then
+            python collector/context.py --dry-run
+          else
+            python collector/context.py
+          fi

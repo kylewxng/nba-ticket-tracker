@@ -259,7 +259,8 @@ def main() -> int:
         client_id = os.environ.get("SEATGEEK_CLIENT_ID")
         if not client_id:
             # Not an error: the client ID just hasn't been approved yet.
-            print("SEATGEEK_CLIENT_ID isn't set yet, so there's nothing to collect. Skipping.")
+            # ::warning:: makes the skip show up in the GitHub Actions summary.
+            print("::warning::SEATGEEK_CLIENT_ID isn't set, so nothing was collected. Skipping.")
             return 0
         events = fetch_events(client_id, now)
 

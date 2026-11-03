@@ -73,23 +73,47 @@ def test_tm_skips_cleanly_without_key(monkeypatch, capsys):
 # --- Schedule ------------------------------------------------------------
 
 def test_schedule_rows():
-    data = context.load(str(FIX / "nba_schedule.json"))
-    rows = context.schedule_rows(data, NOW)
+    events = context.load(str(FIX / "espn_scoreboard.json"))["events"]
+    rows = context.schedule_rows(events, NOW)
     ids = [r["game_id"] for r in rows]
-    assert "0042600101" not in ids                           # undecided playoff placeholder skipped
+    assert "401820001" not in ids                            # undecided playoff matchup skipped
+    assert ids.count("401810030") == 1                       # duplicate event merged
     by_id = {r["game_id"]: r for r in rows}
 
-    opener = by_id["0022600001"]
+    opener = by_id["401810001"]
     assert opener["game_type"] == "regular"
+    assert opener["starts_at"] == "2026-10-21T02:30:00+00:00"
+    assert (opener["home_tricode"], opener["away_tricode"]) == ("LAL", "GS")
     assert opener["home_team"] == "Los Angeles Lakers"
+    assert (opener["arena"], opener["city"]) == ("Crypto.com Arena", "Los Angeles")
     assert (opener["home_score"], opener["away_score"]) == (112, 108)
-    assert opener["national_tv"] == "TNT"                    # duplicates merged
+    assert opener["national_tv"] == "TNT"                    # broadcasts + geoBroadcasts merged
+    assert opener["status"] == 3
 
-    assert by_id["0012600099"]["game_type"] == "preseason"
-    upcoming = by_id["0022600030"]
+    assert by_id["401809999"]["game_type"] == "preseason"
+    assert by_id["401810005"]["game_type"] == "regular"      # falls back to season type number
+    assert by_id["401810005"]["national_tv"] is None         # no national broadcast
+    upcoming = by_id["401810030"]
     assert upcoming["national_tv"] == "ESPN, ABC"
-    assert upcoming["home_score"] is None                    # not final -> no score
-    assert by_id["0022600005"]["national_tv"] is None        # empty list -> local only
+    assert upcoming["home_score"] is None and upcoming["status"] == 1
+
+
+def test_season_bounds_and_windows(monkeypatch):
+    from datetime import date
+    assert context.season_bounds(date(2026, 11, 2)) == (date(2026, 10, 1), date(2027, 6, 30))
+    assert context.season_bounds(date(2027, 3, 1)) == (date(2026, 10, 1), date(2027, 6, 30))
+    ranges = []
+
+    def fake_get_json(url, params=None, headers=None):
+        ranges.append(params["dates"])
+        return {"events": [{"id": params["dates"]}]}
+
+    monkeypatch.setattr(context, "get_json", fake_get_json)
+    monkeypatch.setattr(context.time, "sleep", lambda s: None)
+    out = context.fetch_scoreboard(date(2026, 11, 2))
+    assert ranges[0] == "20261001-20261014"
+    assert ranges[-1].endswith("-20270630")
+    assert len(out) == len(ranges) == 20                     # Oct 1 - Jun 30 in 14-day windows
 
 
 # --- Injuries -------------------------------------------------------------
@@ -116,9 +140,9 @@ def test_context_one_part_failing_doesnt_stop_the_other(monkeypatch, capsys):
     monkeypatch.setattr(sys, "argv", ["context.py", "--dry-run",
                                       "--injury-fixture", str(FIX / "espn_injuries.json")])
     assert context.main() == 1                               # schedule failed -> nonzero exit
-    out = capsys.readouterr()
-    assert "injuries: 3 players listed" in out.out           # injuries still ran
-    assert "schedule failed" in out.err
+    out = capsys.readouterr().out
+    assert "injuries: 3 players listed" in out               # injuries still ran
+    assert "::error::Schedule failed" in out                 # shows as an error in GitHub Actions
 
 
 # --- common + backup ----------------------------------------------------------

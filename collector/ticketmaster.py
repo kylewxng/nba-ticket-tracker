@@ -183,7 +183,8 @@ def main() -> int:
     else:
         api_key = os.environ.get("TICKETMASTER_API_KEY")
         if not api_key:
-            print("TICKETMASTER_API_KEY isn't set yet, so there's nothing to collect. Skipping.")
+            # ::warning:: makes the skip show up in the GitHub Actions summary.
+            print("::warning::TICKETMASTER_API_KEY isn't set, so nothing was collected. Skipping.")
             return 0
         events = fetch_events(api_key, now)
 

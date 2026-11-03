@@ -17,7 +17,7 @@ All workflows also need `SUPABASE_URL` and `SUPABASE_SERVICE_KEY`. If a price so
 
 **Ticketmaster** is a weaker backup. Its price ranges are mostly face value, not resale, and are often missing. It still records the schedule and on-sale status for every game.
 
-**Game context** comes from two unofficial public feeds: the NBA's schedule file (tip-off times, results, national TV) and ESPN's injury report (saved as a daily snapshot). They're fine for research; check their terms before using them in a commercial product.
+**Game context** comes from ESPN's unofficial public feeds: the season scoreboard (tip-off times, results, national TV) and the injury report (saved as a daily snapshot). They're fine for research; check their terms before using them in a commercial product.
 
 ## Views for modeling
 
@@ -49,7 +49,7 @@ pytest -q
 cd collector
 python collect.py --fixture ../tests/fixtures/sample_events.json --dry-run --force
 python ticketmaster.py --fixture ../tests/fixtures/tm_events.json --dry-run
-python context.py --schedule-fixture ../tests/fixtures/nba_schedule.json \
+python context.py --schedule-fixture ../tests/fixtures/espn_scoreboard.json \
   --injury-fixture ../tests/fixtures/espn_injuries.json --dry-run
 ```
 
