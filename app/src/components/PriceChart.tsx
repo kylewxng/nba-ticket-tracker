@@ -81,24 +81,24 @@ export function PriceChart({ game, range }: { game: Game; range: ChartRange }) {
     >
       {model.grid.map((g) => (
         <g key={g.y}>
-          <line x1="0" y1={g.y} x2={W} y2={g.y} stroke="#E3EAF4" strokeWidth="1" />
-          <text x={W} y={g.y - 4} textAnchor="end" fontSize="10" fill="#8593AB" fontFamily="Public Sans, sans-serif">{g.label}</text>
+          <line x1="0" y1={g.y} x2={W} y2={g.y} stroke="#22304D" strokeWidth="1" />
+          <text x={W} y={g.y - 4} textAnchor="end" fontSize="10" fill="#8E9AB5" fontFamily="Public Sans, sans-serif">{g.label}</text>
         </g>
       ))}
       {model.band && <polygon points={model.band} fill={style.band} />}
-      <polyline points={model.xy.map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ')} fill="none" stroke="#0F1B33" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
+      <polyline points={model.xy.map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ')} fill="none" stroke="#F4F6FA" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
       {model.forecast && <polyline points={model.forecast} fill="none" stroke={style.line} strokeWidth="2.5" strokeDasharray="6 5" strokeLinecap="round" />}
-      <line x1={TODAY_X} y1={TOP - 4} x2={TODAY_X} y2={BOTTOM + 4} stroke="#C9D5E8" strokeWidth="1" strokeDasharray="2 3" />
-      <circle cx={model.last.x} cy={model.last.y} r="5" fill="#0F1B33" stroke="#FFFFFF" strokeWidth="2" />
-      <text x={TODAY_X} y="10" textAnchor="middle" fontSize="11" fill="#5B6B86" fontFamily="Public Sans, sans-serif">Today</text>
-      <text x="0" y="146" fontSize="11" fill="#8593AB" fontFamily="Public Sans, sans-serif">{dayFmt.format(new Date(model.start))}</text>
-      <text x={W} y="146" textAnchor="end" fontSize="11" fill="#8593AB" fontFamily="Public Sans, sans-serif">Tip-off {tipFmt.format(new Date(game.starts_at)).split(', ')[0]}</text>
+      <line x1={TODAY_X} y1={TOP - 4} x2={TODAY_X} y2={BOTTOM + 4} stroke="#3A4A6E" strokeWidth="1" strokeDasharray="2 3" />
+      <circle cx={model.last.x} cy={model.last.y} r="5" fill="#F4F6FA" stroke="#16213A" strokeWidth="2" />
+      <text x={TODAY_X} y="10" textAnchor="middle" fontSize="11" fill="#A9B4CC" fontFamily="Public Sans, sans-serif">Today</text>
+      <text x="0" y="146" fontSize="11" fill="#8E9AB5" fontFamily="Public Sans, sans-serif">{dayFmt.format(new Date(model.start))}</text>
+      <text x={W} y="146" textAnchor="end" fontSize="11" fill="#8E9AB5" fontFamily="Public Sans, sans-serif">Tip-off {tipFmt.format(new Date(game.starts_at)).split(', ')[0]}</text>
       {h && (
         <g pointerEvents="none">
-          <line x1={h.x} y1={TOP - 4} x2={h.x} y2={BOTTOM} stroke="#0F1B33" strokeOpacity="0.25" />
-          <circle cx={h.x} cy={h.y} r="4.5" fill="#FFFFFF" stroke="#0F1B33" strokeWidth="2" />
-          <rect x={tipX - 40} y={Math.max(0, h.y - 34)} width="80" height="24" rx="8" fill="#0F1B33" />
-          <text x={tipX} y={Math.max(0, h.y - 34) + 16} textAnchor="middle" fontSize="11" fontWeight="700" fill="#FFFFFF" fontFamily="Public Sans, sans-serif">
+          <line x1={h.x} y1={TOP - 4} x2={h.x} y2={BOTTOM} stroke="#F4F6FA" strokeOpacity="0.35" />
+          <circle cx={h.x} cy={h.y} r="4.5" fill="#16213A" stroke="#F4F6FA" strokeWidth="2" />
+          <rect x={tipX - 40} y={Math.max(0, h.y - 34)} width="80" height="24" rx="8" fill="#F4F6FA" />
+          <text x={tipX} y={Math.max(0, h.y - 34) + 16} textAnchor="middle" fontSize="11" fontWeight="700" fill="#0E1626" fontFamily="Public Sans, sans-serif">
             {dayFmt.format(new Date(h.t))}: {money(h.p)}
           </text>
         </g>

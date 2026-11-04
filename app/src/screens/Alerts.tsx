@@ -12,7 +12,7 @@ function ReadyCard({ event, game }: { event: AlertEvent; game: Game }) {
   const { dismissEvent } = useStore()
   const navigate = useNavigate()
   return (
-    <section aria-label={`Alert: ${matchup(game)}`} className="glacier glacier-shadow rounded-[22px] px-[18px] py-4">
+    <section aria-label={`Alert: ${matchup(game)}`} className="buy-fill rounded-[22px] px-[18px] py-4">
       <div className="flex items-center gap-2">
         <Bell size={18} strokeWidth={2.2} aria-hidden="true" />
         <h2 className="m-0 text-[14px] font-bold">{event.kind === 'buy_signal' ? 'Tixcast says Buy now' : 'Your price hit'}</h2>
@@ -27,8 +27,8 @@ function ReadyCard({ event, game }: { event: AlertEvent; game: Game }) {
       </div>
       {game.headline && <p className="m-0 mt-2.5 text-[13px] font-medium leading-[1.45]">{game.headline}</p>}
       <div className="mt-3.5 grid grid-cols-2 gap-2">
-        <button type="button" onClick={() => navigate(`/game/${game.game_id}`)} className="h-11 rounded-xl bg-white text-[14px] font-bold text-[#1F7FC0]">View game</button>
-        <button type="button" onClick={() => void dismissEvent(event.id)} className="h-11 rounded-xl border-[1.5px] border-[rgba(11,42,69,0.35)] text-[14px] font-bold">Dismiss</button>
+        <button type="button" onClick={() => navigate(`/game/${game.game_id}`)} className="h-11 rounded-xl bg-[#1A0E0A] text-[14px] font-bold text-[#FF8A6B]">View game</button>
+        <button type="button" onClick={() => void dismissEvent(event.id)} className="h-11 rounded-xl border-[1.5px] border-[#1A0E0A] text-[14px] font-bold">Dismiss</button>
       </div>
     </section>
   )
@@ -46,7 +46,7 @@ function AlertCard({ alert, game }: { alert: Alert; game: Game }) {
     : chance != null
       ? price! <= target! ? 'At your price now' : `${chance}% chance before tip-off`
       : `Tixcast says ${VERDICT_LABEL[game.verdict]} for now`
-  const noteColor = !alert.active ? 'text-faint' : chance == null ? 'text-sub' : chance >= 50 ? 'text-link' : 'text-[#9A6100]'
+  const noteColor = !alert.active ? 'text-faint' : chance == null ? 'text-sub' : chance >= 50 ? 'text-[#9CC4FF]' : 'text-[#E3B87C]'
   return (
     <div className={`glass rounded-2xl p-3.5 transition-opacity ${alert.active ? '' : 'opacity-60'}`}>
       <div className="flex items-start gap-3">
@@ -92,18 +92,24 @@ export function AlertsScreen() {
       </div>
 
       {!signedIn ? (
-        <div className="glass flex flex-col gap-3 rounded-[22px] p-5">
+        <div className="glass flex flex-col gap-3 rounded-[22px] p-5 md:max-w-[520px]">
           <p className="m-0 text-[17px] font-bold">Hear when it's time to buy</p>
           <p className="m-0 text-[14px] leading-[1.5] text-sub">Set a target price on any game and Tixcast tells you when it gets there, or when it says Buy now.</p>
           <PrimaryButton onClick={() => openSignIn('Sign in to set price alerts on any LA home game.')}>Sign in to set alerts</PrimaryButton>
         </div>
       ) : (
         <>
-          {ready_.map(({ e, g }) => <ReadyCard key={e.id} event={e} game={g} />)}
+          {ready_.length > 0 && (
+            <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+              {ready_.map(({ e, g }) => <ReadyCard key={e.id} event={e} game={g} />)}
+            </div>
+          )}
           <section aria-labelledby="active-title" className="flex flex-col gap-2.5">
             <h2 id="active-title" className="m-0 text-[17px] font-bold">Watching for a price</h2>
             {live.length ? (
-              live.map(({ a, g }) => <AlertCard key={a.id} alert={a} game={g} />)
+              <div className="grid gap-2.5 md:grid-cols-2 md:gap-3 xl:grid-cols-3">
+                {live.map(({ a, g }) => <AlertCard key={a.id} alert={a} game={g} />)}
+              </div>
             ) : (
               <div className="glass rounded-2xl p-5">
                 <p className="m-0 text-[15px] font-semibold">No alerts yet</p>

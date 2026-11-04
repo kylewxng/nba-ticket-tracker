@@ -44,7 +44,7 @@ export function ExploreScreen() {
     <Screen className="gap-[18px]">
       <PageTitle>Explore</PageTitle>
 
-      <div className="relative">
+      <div className="relative md:max-w-[520px]">
         <label htmlFor="search" className="sr-only-safe">Search teams or arenas</label>
         <Search size={18} strokeWidth={2} className="pointer-events-none absolute left-3.5 top-[15px] z-10 text-sub" aria-hidden="true" />
         <input
@@ -57,7 +57,7 @@ export function ExploreScreen() {
         />
       </div>
 
-      <div role="group" aria-label="Filters" className="-mx-5 flex gap-2 overflow-x-auto px-5 pb-1 [scrollbar-width:none]">
+      <div role="group" aria-label="Filters" className="-mx-5 flex gap-2 overflow-x-auto px-5 pb-1 [scrollbar-width:none] md:mx-0 md:flex-wrap md:px-0">
         {FILTERS.map((f) => (
           <button
             key={f.id}
@@ -76,13 +76,13 @@ export function ExploreScreen() {
         <span className="text-[13px] text-sub">{ready ? `${list.length} game${list.length === 1 ? '' : 's'}` : ''}</span>
       </div>
 
-      <div className="flex flex-col gap-2.5">
+      <div className="flex flex-col gap-2.5 md:grid md:grid-cols-2 md:gap-3 xl:grid-cols-3">
         {!ready
           ? [0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-[72px]" />)
           : list.length
             ? list.map((g) => <GameRow key={g.game_id} game={g} />)
             : (
-              <div className="glass rounded-2xl p-5 text-[14px] leading-[1.5] text-sub">
+              <div className="glass rounded-2xl p-5 text-[14px] leading-[1.5] text-sub md:col-span-2 xl:col-span-3">
                 {query ? `No LA home games match "${query}". Try a team name like Warriors or Celtics.` : 'No games match this filter right now.'}
                 {(query || filter !== 'all') && (
                   <button type="button" onClick={() => { setQuery(''); setFilter('all') }} className="mt-2 block font-semibold text-link">Show all games</button>

@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import type { Session } from '@supabase/supabase-js'
 import { toast } from 'sonner'
-import { DEMO } from './config'
+import { DEMO, SUPABASE_ANON_KEY, SUPABASE_URL } from './config'
 import { demoGames } from './demo'
 import { load, save } from './storage'
 import { supabase } from './supabase'
@@ -37,6 +37,7 @@ interface Store {
   session: Session | null
   email: string | null
   signedIn: boolean
+  googleEnabled: boolean
   signInOpen: boolean
   signInReason: string | null
   openSignIn: (reason?: string, pending?: Pending) => void
@@ -99,6 +100,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [signInReason, setSignInReason] = useState<string | null>(null)
   const [pushPromptOpen, setPushPromptOpen] = useState(false)
   const [resume, setResume] = useState<Pending | null>(null)
+  const [googleEnabled, setGoogleEnabled] = useState(false)
   const userId = session?.user.id ?? null
   const signedIn = DEMO || !!userId
   const pendingRef = useRef<Pending | null>(load<Pending | null>('pending', null))
@@ -134,6 +136,16 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const gameById = useCallback((id: string) => games?.find((g) => g.game_id === id), [games])
 
   // ---- auth ----------------------------------------------------------------
+  // Only offer Google sign-in when it's switched on in Supabase; otherwise the
+  // button would send people to an error page.
+  useEffect(() => {
+    if (DEMO || !SUPABASE_URL || !SUPABASE_ANON_KEY) return
+    fetch(`${SUPABASE_URL}/auth/v1/settings`, { headers: { apikey: SUPABASE_ANON_KEY } })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((cfg: { external?: Record<string, boolean> } | null) => setGoogleEnabled(!!cfg?.external?.google))
+      .catch(() => setGoogleEnabled(false))
+  }, [])
+
   useEffect(() => {
     if (!supabase) return
     supabase.auth.getSession().then(({ data }) => {
@@ -375,7 +387,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     ready: authReady && games !== null,
     games, gamesError, gameById, refreshGames,
     onboarded, finishOnboarding,
-    session, email: session?.user.email ?? null, signedIn,
+    session, email: session?.user.email ?? null, signedIn, googleEnabled,
     signInOpen, signInReason, openSignIn, closeSignIn: () => setSignInOpen(false),
     signInWithEmail, signInWithGoogle, signOut, takePending,
     resume, clearResume: () => setResume(null),
@@ -384,7 +396,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     alerts, alertFor, saveAlert, setAlertActive, deleteAlert,
     events, dismissEvent,
     pushPromptOpen, setPushPromptOpen,
-  }), [authReady, games, gamesError, gameById, refreshGames, onboarded, finishOnboarding, session, signedIn,
+  }), [authReady, games, gamesError, gameById, refreshGames, onboarded, finishOnboarding, session, signedIn, googleEnabled,
     signInOpen, signInReason, openSignIn, signInWithEmail, signInWithGoogle, signOut, takePending, resume, profile,
     updateProfile, watches, toggleWatch, alerts, alertFor, saveAlert, setAlertActive, deleteAlert, events,
     dismissEvent, pushPromptOpen])

@@ -22,9 +22,10 @@ export function Onboarding() {
   const preview = bestCall((games ?? []).filter((g) => teams.includes(g.home_tricode)))
 
   return (
-    <main className="mx-auto flex min-h-dvh w-full max-w-[440px] flex-col px-5 pb-[max(24px,env(safe-area-inset-bottom))] pt-[max(28px,env(safe-area-inset-top))]">
-      <span className="font-display text-[26px] font-black">Tix<span className="text-glacier">cast</span></span>
-      <h1 className="font-display m-0 mt-8 text-[52px] font-black leading-[0.92]">Buy now<br />or wait?</h1>
+    <main className="mx-auto flex min-h-dvh w-full max-w-[440px] flex-col px-5 pb-[max(24px,env(safe-area-inset-bottom))] pt-[max(28px,env(safe-area-inset-top))] md:max-w-[560px] lg:grid lg:max-w-[1080px] lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:items-center lg:gap-16 lg:px-10">
+      <div className="flex flex-col">
+      <span className="font-display text-[26px] font-black">Tix<span className="text-[#FF6B47]">cast</span></span>
+      <h1 className="font-display m-0 mt-8 text-[52px] font-black leading-[0.92] lg:mt-14 lg:text-[88px]">Buy now<br />or wait?</h1>
       <p className="m-0 mt-3 max-w-[32ch] text-[16px] leading-[1.5] text-sub">
         Tixcast watches resale prices for every LA home game and tells you when to buy.
       </p>
@@ -42,7 +43,9 @@ export function Onboarding() {
         </div>
       )}
 
-      <fieldset className="m-0 mt-8 border-0 p-0">
+      </div>
+      <div className="flex flex-1 flex-col lg:glass lg:flex-none lg:rounded-[28px] lg:p-8">
+      <fieldset className="m-0 mt-8 border-0 p-0 lg:mt-0">
         <legend className="mb-2.5 p-0 text-[15px] font-bold">Whose games do you go to?</legend>
         <div className="grid grid-cols-3 gap-2">
           {CHOICES.map((c) => (
@@ -51,7 +54,7 @@ export function Onboarding() {
               type="button"
               aria-pressed={choice === c.id}
               onClick={() => setChoice(c.id)}
-              className={cn('h-14 rounded-2xl border text-[15px] font-bold transition-colors', choice === c.id ? 'glacier border-transparent' : 'border-white bg-white/80 text-ink')}
+              className={cn('h-14 rounded-2xl border text-[15px] font-bold transition-colors', choice === c.id ? 'glacier border-transparent' : 'border-[#2A3858] bg-[#16213A] text-ink')}
             >
               {c.label}
             </button>
@@ -75,6 +78,7 @@ export function Onboarding() {
       <div className="mt-auto pt-8">
         <PrimaryButton onClick={() => finishOnboarding(teams, count)}>Show my games</PrimaryButton>
         <p className="m-0 mt-3 text-center text-[12px] text-faint">No account needed to look around.</p>
+      </div>
       </div>
     </main>
   )

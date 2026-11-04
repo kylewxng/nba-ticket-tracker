@@ -83,7 +83,7 @@ function Verdict({ game }: { game: Game }) {
               type="button"
               aria-pressed={range === v}
               onClick={() => setRange(v)}
-              className={cn('h-9 rounded-[9px] text-[13px] font-semibold', range === v ? 'bg-white text-ink shadow-[0_2px_6px_rgba(28,58,112,0.12)]' : 'text-sub')}
+              className={cn('h-9 rounded-[9px] text-[13px] font-semibold', range === v ? 'bg-[#1E2B48] text-ink' : 'text-sub')}
             >
               {label}
             </button>
@@ -116,7 +116,7 @@ export function GameScreen({ alertOpen = false }: { alertOpen?: boolean }) {
         <BackButton />
         <h1 className="font-display m-0 text-[34px] font-extrabold leading-none">This game isn't on Tixcast</h1>
         <p className="m-0 text-[15px] leading-[1.5] text-sub">It may have already been played, or the link is wrong. Find another game in Explore.</p>
-        <Link to="/explore" className="glacier glacier-shadow flex h-[52px] items-center justify-center rounded-2xl font-bold text-glacier-ink">Explore games</Link>
+        <Link to="/explore" className="primary-fill flex h-[52px] items-center justify-center rounded-2xl font-bold hover:text-[#0E1626]">Explore games</Link>
       </main>
     )
   }
@@ -147,11 +147,27 @@ export function GameScreen({ alertOpen = false }: { alertOpen?: boolean }) {
     }
   }
   const buyLabel = game.price_now != null ? `Buy for ${money(game.price_now)}` : 'See tickets'
-  const ctaClass = game.verdict === 'buy' ? 'glacier glacier-shadow text-glacier-ink' : 'bg-ink text-white'
+  const ctaClass = game.verdict === 'buy' ? 'buy-fill' : 'bg-ink text-[#0E1626]'
+  const actions = (
+    <>
+        <button type="button" onClick={onAlert} className="flex h-[52px] items-center justify-center gap-1.5 rounded-2xl border border-[#3A4A6E] bg-transparent text-[15px] font-bold">
+          <Bell size={18} strokeWidth={2} aria-hidden="true" />
+          {alert ? 'Edit alert' : 'Alert me'}
+        </button>
+        {game.buy_url ? (
+          <a href={game.buy_url} target="_blank" rel="noopener noreferrer" className={cn('flex h-[52px] flex-col items-center justify-center rounded-2xl text-[15px] font-bold leading-[1.15] hover:text-inherit', ctaClass)}>
+            <span className="flex items-center gap-1">{buyLabel}<ExternalLink size={13} strokeWidth={2.2} aria-hidden="true" /></span>
+            {game.price_source && <span className="text-[11px] font-semibold opacity-80">on {SOURCE[game.price_source]}</span>}
+          </a>
+        ) : (
+          <span className="flex h-[52px] items-center justify-center rounded-2xl bg-inset text-[14px] font-semibold text-sub">Tickets not listed yet</span>
+        )}
+    </>
+  )
 
   return (
     <>
-      <main className="mx-auto flex w-full max-w-[440px] flex-col gap-5 px-5 pb-[130px] pt-[max(24px,env(safe-area-inset-top))]">
+      <main className="mx-auto flex w-full max-w-[440px] flex-col gap-5 px-5 pb-[130px] pt-[max(24px,env(safe-area-inset-top))] md:max-w-[760px] md:px-8 lg:max-w-[1120px] lg:px-10 lg:pb-16 lg:pt-10">
         <div className="flex items-center justify-between">
           <BackButton />
           <div className="flex gap-2">
@@ -179,7 +195,11 @@ export function GameScreen({ alertOpen = false }: { alertOpen?: boolean }) {
           )}
         </div>
 
+        <div className="flex flex-col gap-5 lg:grid lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] lg:items-start lg:gap-8">
         <Verdict game={game} />
+
+        <div className="flex flex-col gap-5">
+        <div className="hidden grid-cols-[minmax(0,1fr)_minmax(0,1.35fr)] gap-2.5 lg:grid">{actions}</div>
 
         {game.odds_pct != null && (
           <div className="grid grid-cols-2 gap-2.5">
@@ -217,7 +237,7 @@ export function GameScreen({ alertOpen = false }: { alertOpen?: boolean }) {
                     <p className="m-0 truncate text-[15px]">{i.player}</p>
                     <p className="m-0 text-[12px] text-sub">{teamName(i.team)}</p>
                   </div>
-                  <span className={cn('flex-none rounded-md px-2 py-0.5 text-[12px] font-bold', (i.status ?? '').toLowerCase() === 'out' ? 'bg-[#FDE8E9] text-danger' : 'bg-[#FFF1D6] text-[#9A6100]')}>
+                  <span className={cn('flex-none rounded-md px-2 py-0.5 text-[12px] font-bold', (i.status ?? '').toLowerCase() === 'out' ? 'bg-[#3A2226] text-danger' : 'bg-[#3A3022] text-[#E3B87C]')}>
                     {i.status ?? 'Listed'}
                   </span>
                 </div>
@@ -231,21 +251,12 @@ export function GameScreen({ alertOpen = false }: { alertOpen?: boolean }) {
           {game.price_source ? ` from ${SOURCE[game.price_source]} listings` : ''}. Odds are estimates from how similar games have moved, not a guarantee.{' '}
           <button type="button" onClick={() => setHowOpen(true)} className="font-semibold text-link">How forecasts work</button>
         </p>
+        </div>
+        </div>
       </main>
 
-      <div className="glass fixed inset-x-0 bottom-0 z-20 mx-auto grid w-full max-w-[440px] grid-cols-[minmax(0,1fr)_minmax(0,1.35fr)] gap-2.5 rounded-t-3xl px-5 pt-3 safe-bottom">
-        <button type="button" onClick={onAlert} className="flex h-[52px] items-center justify-center gap-1.5 rounded-2xl border border-[#DCE5F2] bg-white text-[15px] font-bold">
-          <Bell size={18} strokeWidth={2} aria-hidden="true" />
-          {alert ? 'Edit alert' : 'Alert me'}
-        </button>
-        {game.buy_url ? (
-          <a href={game.buy_url} target="_blank" rel="noopener noreferrer" className={cn('flex h-[52px] flex-col items-center justify-center rounded-2xl text-[15px] font-bold leading-[1.15] hover:text-inherit', ctaClass)}>
-            <span className="flex items-center gap-1">{buyLabel}<ExternalLink size={13} strokeWidth={2.2} aria-hidden="true" /></span>
-            {game.price_source && <span className="text-[11px] font-semibold opacity-80">on {SOURCE[game.price_source]}</span>}
-          </a>
-        ) : (
-          <span className="flex h-[52px] items-center justify-center rounded-2xl bg-inset text-[14px] font-semibold text-sub">Tickets not listed yet</span>
-        )}
+      <div className="glass fixed inset-x-0 bottom-0 z-20 mx-auto grid w-full max-w-[440px] grid-cols-[minmax(0,1fr)_minmax(0,1.35fr)] gap-2.5 rounded-t-3xl px-5 pt-3 safe-bottom md:max-w-[760px] md:px-8 lg:hidden">
+        {actions}
       </div>
 
       <AlertSheet game={game} open={alertOpen} onClose={() => navigate(`/game/${game.game_id}`, { replace: true })} />

@@ -32,7 +32,7 @@ export function AlertSheet({ game, open, onClose }: { game: Game; open: boolean;
   const max = price != null ? Math.round(price) : 0
   const chance = price != null ? chanceToHit(game, target) : 0
   const presets = useMemo(() => (price != null ? presetTargets(game) : []), [game, price])
-  const chanceTone = chance >= 50 ? 'text-link' : chance >= 20 ? 'text-[#9A6100]' : 'text-danger'
+  const chanceTone = chance >= 50 ? 'text-[#9CC4FF]' : chance >= 20 ? 'text-[#E3B87C]' : 'text-danger'
 
   const onSave = async () => {
     setSaving(true)
@@ -66,7 +66,7 @@ export function AlertSheet({ game, open, onClose }: { game: Game; open: boolean;
                 step={1}
                 value={Math.min(Math.max(target, min), max)}
                 onChange={(e) => setTarget(Number(e.target.value))}
-                className="mt-2.5 w-full accent-[#4AAAE6]"
+                className="mt-2.5 w-full accent-[#7FB2FF]"
               />
               <p className={cn('m-0 mt-2 text-[13px] font-semibold', chanceTone)}>
                 {target >= price ? "It's already at this price. You'll hear right away." : `About a ${chance}% chance it gets there before tip-off`}
@@ -82,7 +82,7 @@ export function AlertSheet({ game, open, onClose }: { game: Game; open: boolean;
                     type="button"
                     aria-pressed={on}
                     onClick={() => setTarget(p.value)}
-                    className={cn('flex h-12 flex-col items-center justify-center rounded-[14px] border leading-[1.15]', on ? 'border-glacier bg-[#E3F3FC]' : 'border-[#DCE5F2] bg-white')}
+                    className={cn('flex h-12 flex-col items-center justify-center rounded-[14px] border leading-[1.15]', on ? 'border-[#7FB2FF] bg-[#233A63]' : 'border-[#2A3858] bg-[#0E1626]')}
                   >
                     <span className="text-[15px] font-bold">{money(p.value)}</span>
                     <span className="text-[11px] text-sub">{p.note}</span>
@@ -114,7 +114,7 @@ export function AlertSheet({ game, open, onClose }: { game: Game; open: boolean;
                 type="button"
                 aria-pressed={channel === id}
                 onClick={() => setChannel(id)}
-                className={cn('h-10 rounded-[10px] text-[14px] font-semibold', channel === id ? 'bg-white text-ink shadow-[0_2px_6px_rgba(28,58,112,0.12)]' : 'text-sub')}
+                className={cn('h-10 rounded-[10px] text-[14px] font-semibold', channel === id ? 'bg-[#1E2B48] text-ink' : 'text-sub')}
               >
                 {label}
               </button>

@@ -11,8 +11,8 @@ export function WatchRow({ game }: { game: Game }) {
   return (
     <Link to={`/game/${game.game_id}`} className="glass flex min-h-11 items-center gap-3 rounded-2xl px-3.5 py-3 text-ink hover:text-ink">
       <div className="flex w-10 flex-none flex-col gap-1" aria-hidden="true">
-        <span className="rounded-md bg-[#E8EEF8] py-[3px] text-center text-[11px] font-bold tracking-[0.04em] text-[#3A4A66]">{game.away_tricode}</span>
-        <span className="rounded-md bg-[#DCE5F2] py-[3px] text-center text-[11px] font-bold tracking-[0.04em]">{game.home_tricode}</span>
+        <span className="rounded-md bg-[#1E2B48] py-[3px] text-center text-[11px] font-bold tracking-[0.04em] text-[#C9D2E3]">{game.away_tricode}</span>
+        <span className="rounded-md bg-[#2A3858] py-[3px] text-center text-[11px] font-bold tracking-[0.04em]">{game.home_tricode}</span>
       </div>
       <div className="min-w-0 flex-1">
         <p className="m-0 truncate text-[15px] font-semibold">{matchup(game)}</p>

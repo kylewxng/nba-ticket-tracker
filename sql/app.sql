@@ -170,3 +170,24 @@ end $$;
 drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created after insert on auth.users
   for each row execute function handle_new_user();
+
+-- ---------------------------------------------------------------------------
+-- Feedback from the Profile tab. Anyone can send; nobody can read it back
+-- through the app. Read it in Supabase -> Table Editor -> feedback.
+-- ---------------------------------------------------------------------------
+
+create table if not exists feedback (
+  id          bigint generated always as identity primary key,
+  user_id     uuid references auth.users(id) on delete set null,
+  email       text check (email is null or email ~* '^[^@\s]+@[^@\s]+\.[^@\s]+$'),
+  topic       text not null default 'other' check (topic in ('idea', 'bug', 'price', 'other')),
+  message     text not null check (char_length(message) between 1 and 4000),
+  page        text,
+  user_agent  text,
+  created_at  timestamptz not null default now()
+);
+
+alter table feedback enable row level security;
+drop policy if exists "anyone can send feedback" on feedback;
+create policy "anyone can send feedback" on feedback for insert to anon, authenticated
+  with check (user_id is null or user_id = auth.uid());

@@ -3,9 +3,9 @@ import type { Game, Verdict } from './types'
 export const VERDICT_LABEL: Record<Verdict, string> = { buy: 'Buy now', wait: 'Wait', watch: 'Watch' }
 
 export const VERDICT_STYLE: Record<Verdict, { pill: string; line: string; band: string }> = {
-  buy: { pill: 'bg-[#9FD8F6] text-glacier-ink', line: '#4AAAE6', band: 'rgba(74,170,230,0.16)' },
-  wait: { pill: 'bg-[#EFEAFE] text-[#5B3FD1]', line: '#7A5CF0', band: 'rgba(122,92,240,0.13)' },
-  watch: { pill: 'bg-[#FFF1D6] text-[#9A6100]', line: '#C9850E', band: 'rgba(201,133,14,0.12)' },
+  buy: { pill: 'bg-[#FF6B47] text-[#1A0E0A]', line: '#FF6B47', band: 'rgba(255,107,71,0.18)' },
+  wait: { pill: 'bg-[#233A63] text-[#A8CBFF]', line: '#7FB2FF', band: 'rgba(127,178,255,0.16)' },
+  watch: { pill: 'bg-[#3A3022] text-[#E3B87C]', line: '#E3B87C', band: 'rgba(227,184,124,0.14)' },
 }
 
 /**

@@ -15,7 +15,7 @@ function GoogleMark() {
 }
 
 export function SignInSheet() {
-  const { signInOpen, closeSignIn, signInReason, signInWithEmail, signInWithGoogle } = useStore()
+  const { signInOpen, closeSignIn, signInReason, signInWithEmail, signInWithGoogle, googleEnabled } = useStore()
   const [email, setEmail] = useState('')
   const [sentTo, setSentTo] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -56,12 +56,16 @@ export function SignInSheet() {
         </div>
       ) : (
         <div className="flex flex-col gap-3 pb-4">
-          <button type="button" onClick={() => void signInWithGoogle()} className="flex h-[52px] items-center justify-center gap-2.5 rounded-2xl border border-[#DCE5F2] bg-white text-[15px] font-bold">
+          {googleEnabled && (
+          <>
+          <button type="button" onClick={() => void signInWithGoogle()} className="flex h-[52px] items-center justify-center gap-2.5 rounded-2xl border border-[#2A3858] bg-[#1E2B48] text-[15px] font-bold">
             <GoogleMark /> Continue with Google
           </button>
           <div className="flex items-center gap-3 py-1 text-[12px] text-faint" aria-hidden="true">
             <span className="h-px flex-1 bg-line" />or<span className="h-px flex-1 bg-line" />
           </div>
+          </>
+          )}
           <form onSubmit={(e) => void onSubmit(e)} className="flex flex-col gap-3" noValidate>
             <label htmlFor="email" className="text-[13px] font-semibold text-sub">Email</label>
             <input
@@ -74,7 +78,7 @@ export function SignInSheet() {
               placeholder="you@example.com"
               aria-invalid={!!error}
               aria-describedby={error ? 'email-error' : undefined}
-              className="-mt-1 h-[52px] rounded-2xl border border-[#DCE5F2] bg-white px-4 text-[16px] placeholder:text-faint focus:border-glacier focus:outline-none"
+              className="-mt-1 h-[52px] rounded-2xl border border-[#2A3858] bg-[#0E1626] px-4 text-[16px] placeholder:text-faint focus:border-glacier focus:outline-none"
             />
             {error && <p id="email-error" className="m-0 text-[13px] font-semibold text-danger">{error}</p>}
             <PrimaryButton type="submit" disabled={busy}>{busy ? 'Sending…' : 'Email me a sign-in link'}</PrimaryButton>

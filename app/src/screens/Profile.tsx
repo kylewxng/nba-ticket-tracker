@@ -7,6 +7,7 @@ import { enablePush, pushState, type PushState } from '@/lib/push'
 import { useStore } from '@/lib/store'
 import { cn } from '@/lib/utils'
 import { Avatar } from './Home'
+import { FeedbackSheet } from './FeedbackSheet'
 import { HowItWorksSheet } from './HowItWorks'
 
 const TEAM_CHOICES = [
@@ -31,6 +32,7 @@ export function ProfileScreen() {
   const [push, setPush] = useState<PushState>(() => pushState())
   const [howOpen, setHowOpen] = useState(false)
   const [privacyOpen, setPrivacyOpen] = useState(false)
+  const [feedbackOpen, setFeedbackOpen] = useState(false)
 
   const name = demo ? 'Demo mode' : signedIn ? profile.display_name || email || 'You' : 'Not signed in'
   const since = session?.user.created_at
@@ -63,15 +65,17 @@ export function ProfileScreen() {
             {demo ? 'Sample games. Your choices stay on this device.' : signedIn ? (since ? `Member since ${since}` : email) : 'Sign in to save games and get alerts'}
           </p>
           {profile.founding_member && !demo && (
-            <span className="mt-2 inline-block rounded-md bg-[#E3F3FC] px-2 py-0.5 text-[12px] font-bold text-[#1F7FC0]">Founding member</span>
+            <span className="mt-2 inline-block rounded-md bg-[#3A3022] px-2 py-0.5 text-[12px] font-bold text-[#E3B87C]">Founding member</span>
           )}
         </div>
       </div>
 
       {!signedIn && (
-        <PrimaryButton onClick={() => openSignIn()}>Sign in</PrimaryButton>
+        <PrimaryButton onClick={() => openSignIn()} className="lg:max-w-[360px]">Sign in</PrimaryButton>
       )}
 
+      <div className="flex flex-col gap-[22px] lg:grid lg:grid-cols-2 lg:items-start lg:gap-10">
+      <div className="flex flex-col gap-[22px]">
       <section aria-labelledby="record-title" className="glass rounded-[20px] p-[18px]">
         <h2 id="record-title" className="m-0 text-[14px] font-semibold text-sub">Your Tixcast</h2>
         <div className="mt-3 grid grid-cols-3 gap-2">
@@ -102,7 +106,7 @@ export function ProfileScreen() {
                 onClick={() => toggleTeam(t.id)}
                 className={cn('flex h-10 items-center gap-2 rounded-full pl-1.5 pr-4 text-[14px] font-semibold', on ? 'glacier' : 'glass text-sub')}
               >
-                <span className={cn('flex h-7 w-7 items-center justify-center rounded-full text-[10px] font-bold', on ? 'bg-white/70' : 'bg-[#DCE5F2]')}>{t.id}</span>
+                <span className={cn('flex h-7 w-7 items-center justify-center rounded-full text-[10px] font-bold', on ? 'bg-[rgba(20,32,58,0.18)]' : 'bg-[#2A3858]')}>{t.id}</span>
                 {t.label}
               </button>
             )
@@ -124,6 +128,8 @@ export function ProfileScreen() {
         </div>
       </section>
 
+      </div>
+      <div className="flex flex-col gap-[22px]">
       <section aria-labelledby="notify-title">
         <h2 id="notify-title" className="m-0 mb-2 text-[17px] font-bold">Notifications</h2>
         <div className="glass overflow-hidden rounded-2xl">
@@ -135,7 +141,7 @@ export function ProfileScreen() {
             {push === 'on' ? (
               <span className="text-[13px] font-semibold text-link">On</span>
             ) : push === 'off' || push === 'needs-install' ? (
-              <button type="button" onClick={() => void onPush()} className="glacier h-9 rounded-full px-4 text-[13px] font-bold">{push === 'off' ? 'Turn on' : 'How'}</button>
+              <button type="button" onClick={() => void onPush()} className="primary-fill h-9 rounded-full px-4 text-[13px] font-bold">{push === 'off' ? 'Turn on' : 'How'}</button>
             ) : null}
           </Row>
           <Row>
@@ -161,28 +167,29 @@ export function ProfileScreen() {
           {[
             ['How Tixcast forecasts work', () => setHowOpen(true)],
             ['Privacy and data', () => setPrivacyOpen(true)],
+            ['Help and feedback', () => setFeedbackOpen(true)],
           ].map(([label, fn]) => (
             <button key={label as string} type="button" onClick={fn as () => void} className="flex min-h-[52px] w-full items-center justify-between border-b border-line px-4 text-left text-[15px] last:border-b-0">
               {label as string}<ChevronRight size={16} className="text-sub" aria-hidden="true" />
             </button>
           ))}
-          <a href="mailto:hello@tixcast.app?subject=Tixcast%20feedback" className="flex min-h-[52px] items-center justify-between px-4 text-[15px] text-ink hover:text-ink">
-            Help and feedback<ChevronRight size={16} className="text-sub" aria-hidden="true" />
-          </a>
         </div>
       </section>
 
       {signedIn && !demo && (
-        <button type="button" onClick={() => void signOut()} className="h-12 rounded-[14px] border border-[#F5C9CB] text-[15px] font-semibold text-danger">Sign out</button>
+        <button type="button" onClick={() => void signOut()} className="h-12 rounded-[14px] border border-[#3A2A2A] text-[15px] font-semibold text-danger">Sign out</button>
       )}
+      </div>
+      </div>
       <p className="m-0 text-center text-[12px] text-faint">Tixcast isn't affiliated with the NBA, its teams, or any ticket marketplace.</p>
 
       <HowItWorksSheet open={howOpen} onOpenChange={setHowOpen} />
+      <FeedbackSheet open={feedbackOpen} onOpenChange={setFeedbackOpen} />
       <Sheet open={privacyOpen} onOpenChange={setPrivacyOpen} title="Privacy and data">
-        <div className="flex flex-col gap-3 pb-4 text-[15px] leading-[1.55] text-[#2A3A57]">
+        <div className="flex flex-col gap-3 pb-4 text-[15px] leading-[1.55] text-[#C9D2E3]">
           <p className="m-0">Tixcast stores your email, the games you watch, your alerts, and the devices you allow notifications on. That's it.</p>
           <p className="m-0">We don't sell your data or share it with ticket sellers. When you tap Buy, you leave Tixcast for the seller's site, and we may earn a referral fee at no cost to you.</p>
-          <p className="m-0">To delete your account and everything in it, email <a href="mailto:hello@tixcast.app?subject=Delete%20my%20account">hello@tixcast.app</a> from the address you signed in with.</p>
+          <p className="m-0">To delete your account and everything in it, email hello@tixcast.app from the address you signed in with, or send a request from Help and feedback.</p>
         </div>
       </Sheet>
     </Screen>

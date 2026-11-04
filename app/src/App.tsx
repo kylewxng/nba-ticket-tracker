@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { BrowserRouter, HashRouter, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { Toaster } from 'sonner'
-import { TabBar } from '@/components/layout'
+import { SideNav, TabBar } from '@/components/layout'
 import { USE_HASH_ROUTER } from '@/lib/config'
 import { StoreProvider, useStore } from '@/lib/store'
 import { AlertsScreen } from '@/screens/Alerts'
@@ -36,6 +36,8 @@ function Shell() {
 
   return (
     <>
+      <SideNav />
+      <div className="lg:pl-[248px]">
       <Routes>
         <Route path="/" element={<HomeScreen />} />
         <Route path="/explore" element={<ExploreScreen />} />
@@ -45,6 +47,7 @@ function Shell() {
         <Route path="/game/:id/alert" element={<GameScreen alertOpen />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+      </div>
       {onTab && <TabBar badge={events.length > 0} />}
       <SignInSheet />
       <PushPrompt />
@@ -63,7 +66,7 @@ export default function App() {
         position="top-center"
         toastOptions={{
           classNames: {
-            toast: '!rounded-2xl !border-white !bg-white/95 !shadow-[0_10px_30px_rgba(28,58,112,0.14)] !font-sans',
+            toast: '!rounded-2xl !border-[#2A3858] !bg-[#1E2B48] !shadow-[0_10px_30px_rgba(0,0,0,0.4)] !font-sans',
             title: '!text-[14px] !font-bold !text-ink',
             description: '!text-[13px] !text-sub',
           },

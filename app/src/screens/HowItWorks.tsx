@@ -4,7 +4,7 @@ import { VerdictPill } from '@/components/kit'
 export function HowItWorksSheet({ open, onOpenChange }: { open: boolean; onOpenChange: (o: boolean) => void }) {
   return (
     <Sheet open={open} onOpenChange={onOpenChange} title="How forecasts work">
-      <div className="flex flex-col gap-4 pb-4 text-[15px] leading-[1.55] text-[#2A3A57]">
+      <div className="flex flex-col gap-4 pb-4 text-[15px] leading-[1.55] text-[#C9D2E3]">
         <p className="m-0">
           Tixcast checks resale prices for every Lakers and Clippers home game several times a day. For each game it looks at how the cheapest ticket has moved, how many seats are listed, the day and opponent, national TV, and the injury report.
         </p>
