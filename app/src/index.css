@@ -1,0 +1,87 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --page: #F3F6FB;
+    --ink: #0F1B33;
+    --sub: #5B6B86;
+    --muted: #8593AB;
+    --line: #E3EAF4;
+    --inset: #EEF3FA;
+    --glacier: #4AAAE6;
+    --glacier-ink: #0B2A45;
+    --link: #2388CC;
+    --wait: #7A5CF0;
+    --danger: #D93D42;
+
+    /* shadcn tokens mapped onto the Tixcast palette */
+    --background: 216 45% 97%;
+    --foreground: 220 55% 13%;
+    --card: 0 0% 100%;
+    --card-foreground: 220 55% 13%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 55% 13%;
+    --primary: 203 76% 60%;
+    --primary-foreground: 207 72% 16%;
+    --secondary: 214 50% 96%;
+    --secondary-foreground: 220 55% 13%;
+    --muted-hsl: 214 50% 96%;
+    --muted-foreground: 218 19% 44%;
+    --accent: 214 50% 96%;
+    --accent-foreground: 220 55% 13%;
+    --destructive: 358 68% 55%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 214 42% 92%;
+    --input: 214 42% 88%;
+    --ring: 203 70% 47%;
+    --radius: 14px;
+  }
+
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background:
+      radial-gradient(120% 55% at 0% 0%, #D9E6FB 0%, rgba(217, 230, 251, 0) 62%),
+      radial-gradient(110% 45% at 100% 100%, #E2E8FB 0%, rgba(226, 232, 251, 0) 60%),
+      var(--page);
+    background-attachment: fixed;
+    color: var(--ink);
+    font-family: 'Public Sans', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+    min-height: 100dvh;
+  }
+  a { color: var(--link); text-decoration: none; }
+  a:hover { color: #1B6FAE; }
+  :focus-visible { outline: 2px solid var(--link); outline-offset: 2px; border-radius: 8px; }
+  button { font: inherit; color: inherit; }
+  input, select { font: inherit; }
+  .font-display { font-family: 'Big Shoulders Display', 'Public Sans', sans-serif; }
+  .tabular { font-variant-numeric: tabular-nums; }
+}
+
+@layer components {
+  .glass {
+    background: rgba(255, 255, 255, 0.78);
+    border: 1px solid rgba(255, 255, 255, 0.95);
+    box-shadow: 0 6px 20px rgba(28, 58, 112, 0.07);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+  }
+  .glacier {
+    background: linear-gradient(135deg, #6CBDF0 0%, #B4E3F8 100%);
+    color: var(--glacier-ink);
+  }
+  .glacier-shadow { box-shadow: 0 14px 30px rgba(76, 166, 226, 0.28); }
+  .sr-only-safe {
+    position: absolute; width: 1px; height: 1px; overflow: hidden;
+    clip: rect(0 0 0 0); white-space: nowrap;
+  }
+  .safe-bottom { padding-bottom: max(18px, env(safe-area-inset-bottom)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}

@@ -81,3 +81,56 @@ def supabase_upsert(base_url: str, key: str, table: str, rows: list[dict],
         resp = requests.post(url, headers=headers, data=json.dumps(chunk), timeout=TIMEOUT)
         if resp.status_code >= 400:
             raise RuntimeError(f"Supabase write to {table} failed ({resp.status_code}): {resp.text[:500]}")
+
+
+def _headers(key: str, extra: dict | None = None) -> dict:
+    h = {"apikey": key, "Authorization": f"Bearer {key}", "Content-Type": "application/json"}
+    if extra:
+        h.update(extra)
+    return h
+
+
+def supabase_select(base_url: str, key: str, table: str, params: dict | None = None,
+                    page_size: int = 1000) -> list[dict]:
+    """Read every row matching PostgREST filters in `params`, paging past the 1,000-row cap."""
+    url = f"{base_url.rstrip('/')}/rest/v1/{table}"
+    rows: list[dict] = []
+    start = 0
+    while True:
+        headers = _headers(key, {"Range-Unit": "items", "Range": f"{start}-{start + page_size - 1}"})
+        resp = requests.get(url, headers=headers, params=params or {}, timeout=TIMEOUT)
+        if resp.status_code >= 400:
+            raise RuntimeError(f"Supabase read from {table} failed ({resp.status_code}): {resp.text[:500]}")
+        page = resp.json()
+        rows.extend(page)
+        if len(page) < page_size:
+            return rows
+        start += page_size
+
+
+def supabase_insert(base_url: str, key: str, table: str, rows: list[dict]) -> list[dict]:
+    if not rows:
+        return []
+    url = f"{base_url.rstrip('/')}/rest/v1/{table}"
+    resp = requests.post(url, headers=_headers(key, {"Prefer": "return=representation"}),
+                         data=json.dumps(rows), timeout=TIMEOUT)
+    if resp.status_code >= 400:
+        raise RuntimeError(f"Supabase insert into {table} failed ({resp.status_code}): {resp.text[:500]}")
+    return resp.json()
+
+
+def supabase_update(base_url: str, key: str, table: str, match: dict, values: dict) -> None:
+    url = f"{base_url.rstrip('/')}/rest/v1/{table}"
+    params = {k: f"eq.{v}" for k, v in match.items()}
+    resp = requests.patch(url, headers=_headers(key, {"Prefer": "return=minimal"}), params=params,
+                          data=json.dumps(values), timeout=TIMEOUT)
+    if resp.status_code >= 400:
+        raise RuntimeError(f"Supabase update of {table} failed ({resp.status_code}): {resp.text[:500]}")
+
+
+def supabase_delete(base_url: str, key: str, table: str, params: dict) -> None:
+    url = f"{base_url.rstrip('/')}/rest/v1/{table}"
+    resp = requests.delete(url, headers=_headers(key, {"Prefer": "return=minimal"}), params=params,
+                           timeout=TIMEOUT)
+    if resp.status_code >= 400:
+        raise RuntimeError(f"Supabase delete from {table} failed ({resp.status_code}): {resp.text[:500]}")

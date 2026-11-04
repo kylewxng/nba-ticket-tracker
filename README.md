@@ -61,3 +61,22 @@ Drop the fixture flags to try live data without writing anything (with `--dry-ru
 - **Supabase free projects pause** after 7 days of inactivity. The collectors write often enough to keep it awake.
 - **Scheduled runs can be late or skipped** when GitHub is busy, so expect some gaps.
 - **Check SeatGeek's and Ticketmaster's API terms** before using their data commercially.
+
+## The Tixcast app
+
+The web app lives in [`app/`](app/README.md). The pieces fit together like this:
+
+1. The collectors write prices, schedules and injuries to Supabase (above).
+2. `collector/feed.py` turns them into one row per upcoming Lakers or Clippers home game in `app_games`, with a beta Buy now / Wait / Watch call. Rules for now; the model replaces them once it wins the backtest.
+3. `collector/alerts.py` checks every active alert against the feed and sends a web push notification, or an email when push isn't available.
+4. The app reads `app_games` and each signed-in person's own watches and alerts. Row-level security keeps everyone's data private.
+
+Workflow: `.github/workflows/feed.yml`, twice an hour.
+
+### One-time setup
+
+1. **Supabase:** restore the project, then run `sql/schema.sql`, `sql/context.sql`, `sql/waitlist.sql` and `sql/app.sql` in the SQL Editor, in that order.
+2. **Supabase Auth:** under Authentication, URL Configuration, set the Site URL to `https://tixcast.app` and add `http://localhost:5173` as a redirect URL. Turn on the Google provider if you want Google sign-in.
+3. **Push keys:** run `npx web-push generate-vapid-keys` once.
+4. **GitHub secrets** (Settings, Secrets and variables, Actions): `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` (`mailto:` plus your email), and for email alerts `RESEND_API_KEY` and `ALERT_FROM_EMAIL` (for example `Tixcast <alerts@tixcast.app>`, after verifying the domain in Resend).
+5. **Vercel:** follow [app/README.md](app/README.md). Set `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` and `VITE_VAPID_PUBLIC_KEY`.

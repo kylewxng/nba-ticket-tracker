@@ -1,0 +1,45 @@
+name: Update app feed and send alerts
+
+on:
+  schedule:
+    # Twice an hour, after the hourly price pull at :07.
+    - cron: "27,57 * * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Build and print only; don't write or send anything"
+        type: boolean
+        default: false
+
+concurrency:
+  group: feed
+  cancel-in-progress: false
+
+jobs:
+  feed:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+      VAPID_PUBLIC_KEY: ${{ secrets.VAPID_PUBLIC_KEY }}
+      VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
+      VAPID_SUBJECT: ${{ secrets.VAPID_SUBJECT }}
+      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+      ALERT_FROM_EMAIL: ${{ secrets.ALERT_FROM_EMAIL }}
+      APP_URL: https://tixcast.app
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Build game feed with beta verdicts
+        run: python collector/feed.py ${{ inputs.dry_run && '--dry-run' || '' }}
+
+      - name: Check alerts and notify
+        run: python collector/alerts.py ${{ inputs.dry_run && '--dry-run' || '' }}
