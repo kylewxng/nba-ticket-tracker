@@ -42,6 +42,7 @@ export interface Game {
 
 export interface Profile {
   display_name: string | null
+  avatar_url: string | null
   teams: string[]
   ticket_count: number
   max_price: number | null

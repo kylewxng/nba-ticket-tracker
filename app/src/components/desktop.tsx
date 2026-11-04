@@ -49,7 +49,7 @@ export function TopBar() {
     <header className="sticky top-0 z-30 border-b border-[#1B2743] bg-[rgba(14,22,38,0.88)] backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-[1200px] items-center gap-8 px-8 xl:px-10">
         <Link to="/" aria-label="Tixcast home" className="flex-none">
-          <Logo height={26} />
+          <Logo height={22} />
         </Link>
         <nav aria-label="Main" className="flex items-center gap-1">
           {NAV.map(({ to, label, end }) => (

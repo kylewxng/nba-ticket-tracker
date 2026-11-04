@@ -6,9 +6,11 @@ import { demoGames } from './demo'
 import { load, save } from './storage'
 import { supabase } from './supabase'
 import type { Alert, AlertDraft, AlertEvent, Game, Profile } from './types'
+import { squareJpeg } from './image'
 
 const DEFAULT_PROFILE: Profile = {
   display_name: null,
+  avatar_url: null,
   teams: ['LAL', 'LAC'],
   ticket_count: 2,
   max_price: null,
@@ -51,6 +53,9 @@ interface Store {
 
   profile: Profile
   updateProfile: (patch: Partial<Profile>) => Promise<void>
+  /** The username shown everywhere: the saved one, else the part of the email before the @. */
+  displayName: string | null
+  uploadAvatar: (file: File) => Promise<boolean>
 
   watches: Set<string>
   toggleWatch: (gameId: string) => Promise<void>
@@ -262,7 +267,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const updateProfile = useCallback(async (patch: Partial<Profile>) => {
     setProfile((p) => {
       const next = { ...p, ...patch }
-      save('prefs', { teams: next.teams, ticket_count: next.ticket_count })
+      save('prefs', DEMO
+        ? { teams: next.teams, ticket_count: next.ticket_count, display_name: next.display_name, avatar_url: next.avatar_url }
+        : { teams: next.teams, ticket_count: next.ticket_count })
       return next
     })
     if (supabase && userId) {
@@ -272,6 +279,33 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       if (error) fail('save your settings', error.message)
     }
   }, [userId])
+
+  const uploadAvatar = useCallback(async (file: File): Promise<boolean> => {
+    let blob: Blob
+    try {
+      blob = await squareJpeg(file, 320)
+    } catch {
+      fail('use that photo', 'Pick a JPG, PNG, or HEIC photo.')
+      return false
+    }
+    if (DEMO || !supabase || !userId) {
+      const url = await new Promise<string>((res) => { const r = new FileReader(); r.onload = () => res(String(r.result)); r.readAsDataURL(blob) })
+      await updateProfile({ avatar_url: url })
+      return true
+    }
+    const path = `${userId}/avatar-${Date.now()}.jpg`
+    const { error } = await supabase.storage.from('avatars').upload(path, blob, { contentType: 'image/jpeg', upsert: true })
+    if (error) {
+      fail('upload your photo', error.message)
+      return false
+    }
+    const { data } = supabase.storage.from('avatars').getPublicUrl(path)
+    const old = profile.avatar_url
+    await updateProfile({ avatar_url: data.publicUrl })
+    const oldPath = old?.split('/avatars/')[1]
+    if (oldPath && oldPath.startsWith(userId)) void supabase.storage.from('avatars').remove([oldPath])
+    return true
+  }, [userId, profile.avatar_url, updateProfile])
 
   // ---- watches -------------------------------------------------------------
   const toggleWatch = useCallback(async (gameId: string) => {
@@ -391,14 +425,15 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     signInOpen, signInReason, openSignIn, closeSignIn: () => setSignInOpen(false),
     signInWithEmail, signInWithGoogle, signOut, takePending,
     resume, clearResume: () => setResume(null),
-    profile, updateProfile,
+    profile, updateProfile, uploadAvatar,
+    displayName: profile.display_name || session?.user.email?.split('@')[0] || null,
     watches, toggleWatch,
     alerts, alertFor, saveAlert, setAlertActive, deleteAlert,
     events, dismissEvent,
     pushPromptOpen, setPushPromptOpen,
   }), [authReady, games, gamesError, gameById, refreshGames, onboarded, finishOnboarding, session, signedIn, googleEnabled,
     signInOpen, signInReason, openSignIn, signInWithEmail, signInWithGoogle, signOut, takePending, resume, profile,
-    updateProfile, watches, toggleWatch, alerts, alertFor, saveAlert, setAlertActive, deleteAlert, events,
+    updateProfile, uploadAvatar, watches, toggleWatch, alerts, alertFor, saveAlert, setAlertActive, deleteAlert, events,
     dismissEvent, pushPromptOpen])
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>

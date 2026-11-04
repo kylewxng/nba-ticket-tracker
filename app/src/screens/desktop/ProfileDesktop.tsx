@@ -6,6 +6,7 @@ import { Switch } from '@/components/kit'
 import { enablePush, pushState, type PushState } from '@/lib/push'
 import { useStore } from '@/lib/store'
 import { cn } from '@/lib/utils'
+import { EditProfileSheet } from '../EditProfileSheet'
 import { FeedbackSheet } from '../FeedbackSheet'
 import { Avatar } from '../Home'
 import { HowItWorksSheet } from '../HowItWorks'
@@ -45,10 +46,10 @@ function Row({ label, detail, children }: { label: string; detail?: string; chil
 }
 
 export function ProfileDesktop() {
-  const { profile, updateProfile, email, signedIn, demo, session, signOut, openSignIn, watches, alerts, events } = useStore()
+  const { profile, updateProfile, displayName, email, signedIn, demo, session, signOut, openSignIn, watches, alerts, events } = useStore()
   const [push, setPush] = useState<PushState>(() => pushState())
-  const [sheet, setSheet] = useState<'how' | 'privacy' | 'feedback' | null>(null)
-  const name = demo ? 'Demo mode' : signedIn ? profile.display_name || email || 'You' : 'Not signed in'
+  const [sheet, setSheet] = useState<'how' | 'privacy' | 'feedback' | 'edit' | null>(null)
+  const name = signedIn ? displayName || (demo ? 'Demo mode' : 'You') : 'Not signed in'
   const since = session?.user.created_at ? new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(new Date(session.user.created_at)) : null
 
   const toggleTeam = (id: string) => {
@@ -73,6 +74,9 @@ export function ProfileDesktop() {
           </p>
         </div>
         {profile.founding_member && !demo && <span className="rounded-md bg-[#3A3022] px-2.5 py-1 text-[13px] font-bold text-[#E3B87C]">Founding member</span>}
+        {signedIn && (
+          <button type="button" onClick={() => setSheet('edit')} className="h-11 rounded-xl border border-[#2A3858] px-5 text-[14px] font-semibold hover:bg-[#16213A]">Edit profile</button>
+        )}
         {!signedIn ? (
           <button type="button" onClick={() => openSignIn()} className="primary-fill h-11 rounded-xl px-5 text-[14px] font-bold">Sign in</button>
         ) : !demo ? (
@@ -141,6 +145,7 @@ export function ProfileDesktop() {
       <HowItWorksSheet open={sheet === 'how'} onOpenChange={(o) => !o && setSheet(null)} />
       <PrivacySheet open={sheet === 'privacy'} onOpenChange={(o) => !o && setSheet(null)} />
       <FeedbackSheet open={sheet === 'feedback'} onOpenChange={(o) => !o && setSheet(null)} />
+      <EditProfileSheet open={sheet === 'edit'} onOpenChange={(o) => !o && setSheet(null)} />
     </Page>
   )
 }

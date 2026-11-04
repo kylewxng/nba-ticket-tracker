@@ -7,6 +7,7 @@ import { enablePush, pushState, type PushState } from '@/lib/push'
 import { useStore } from '@/lib/store'
 import { cn } from '@/lib/utils'
 import { Avatar } from './Home'
+import { EditProfileSheet } from './EditProfileSheet'
 import { FeedbackSheet } from './FeedbackSheet'
 import { HowItWorksSheet } from './HowItWorks'
 
@@ -28,13 +29,14 @@ function Row({ children, className }: { children: React.ReactNode; className?: s
 }
 
 export function ProfileScreen() {
-  const { profile, updateProfile, email, signedIn, demo, session, signOut, openSignIn, watches, alerts, events, setPushPromptOpen } = useStore()
+  const { profile, updateProfile, displayName, email, signedIn, demo, session, signOut, openSignIn, watches, alerts, events, setPushPromptOpen } = useStore()
   const [push, setPush] = useState<PushState>(() => pushState())
   const [howOpen, setHowOpen] = useState(false)
   const [privacyOpen, setPrivacyOpen] = useState(false)
   const [feedbackOpen, setFeedbackOpen] = useState(false)
 
-  const name = demo ? 'Demo mode' : signedIn ? profile.display_name || email || 'You' : 'Not signed in'
+  const name = signedIn ? displayName || (demo ? 'Demo mode' : 'You') : 'Not signed in'
+  const [editOpen, setEditOpen] = useState(false)
   const since = session?.user.created_at
     ? new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric' }).format(new Date(session.user.created_at))
     : null
@@ -68,6 +70,9 @@ export function ProfileScreen() {
             <span className="mt-2 inline-block rounded-md bg-[#3A3022] px-2 py-0.5 text-[12px] font-bold text-[#E3B87C]">Founding member</span>
           )}
         </div>
+        {signedIn && (
+          <button type="button" onClick={() => setEditOpen(true)} className="glass h-10 flex-none rounded-full px-4 text-[14px] font-semibold">Edit</button>
+        )}
       </div>
 
       {!signedIn && (
@@ -185,6 +190,7 @@ export function ProfileScreen() {
 
       <HowItWorksSheet open={howOpen} onOpenChange={setHowOpen} />
       <FeedbackSheet open={feedbackOpen} onOpenChange={setFeedbackOpen} />
+      <EditProfileSheet open={editOpen} onOpenChange={setEditOpen} />
       <PrivacySheet open={privacyOpen} onOpenChange={setPrivacyOpen} />
     </Screen>
   )

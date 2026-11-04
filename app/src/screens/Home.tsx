@@ -11,13 +11,15 @@ import { bestCall } from '@/lib/verdict'
 import { Logo } from '@/components/Logo'
 
 export function Avatar({ size = 44 }: { size?: number }) {
-  const { profile, email, signedIn, demo } = useStore()
-  const name = profile.display_name || email || ''
-  const initial = signedIn && !demo && name ? name[0].toUpperCase() : null
+  const { profile, displayName, signedIn } = useStore()
+  const initial = signedIn && displayName ? displayName[0].toUpperCase() : null
+  if (signedIn && profile.avatar_url) {
+    return <img src={profile.avatar_url} alt="" width={size} height={size} style={{ width: size, height: size }} className="flex-none rounded-full object-cover" />
+  }
   return (
     <span
-      style={{ width: size, height: size, fontSize: size * 0.36 }}
-      className="flex flex-none items-center justify-center rounded-full bg-[#E3B87C] font-bold text-[#14203A]"
+      style={{ width: size, height: size, fontSize: size * 0.4 }}
+      className="font-display flex flex-none items-center justify-center rounded-full bg-[#E3B87C] font-extrabold text-[#14203A]"
     >
       {initial ?? <User size={size * 0.45} strokeWidth={2} aria-hidden="true" />}
     </span>
@@ -70,7 +72,7 @@ export function HomeScreen() {
   return (
     <Screen className="gap-[22px]">
       <header className="flex items-center justify-between lg:hidden">
-        <Logo height={24} />
+        <Logo height={20} />
         <div className="flex gap-2">
           <BellButton unread={events.length > 0} />
           <Link to="/profile" aria-label="Your profile"><Avatar /></Link>
