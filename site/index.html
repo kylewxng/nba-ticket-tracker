@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Tixcast</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
 <meta name="description" content="Tixcast watches resale prices for every NBA game and tells you whether to buy your tickets now or wait.">
 <meta property="og:title" content="Tixcast">
 <meta property="og:description" content="Know when to buy NBA tickets. Join the waitlist.">
@@ -46,7 +47,8 @@
     text-decoration: none;
     color: var(--navy);
   }
-  .logo span { color: var(--clock); }
+  .logo { display: inline-flex; }
+  .logo img { display: block; height: 30px; width: auto; }
 
   /* Hero */
   .hero { position: relative; overflow: hidden; padding: 40px 0 88px; }
@@ -185,7 +187,7 @@
 <body>
 
 <header class="top">
-  <div class="wrap"><a class="logo" href="/">Tix<span>cast</span></a></div>
+  <div class="wrap"><a class="logo" href="/"><img src="tixcast-logo.svg" alt="Tixcast" width="137" height="30"></a></div>
 </header>
 
 <main>

@@ -6,6 +6,7 @@ import { useStore } from '@/lib/store'
 import { matchup } from '@/lib/teams'
 import { cn } from '@/lib/utils'
 import { bestCall } from '@/lib/verdict'
+import { Logo } from '@/components/Logo'
 
 const CHOICES = [
   { id: 'LAL', label: 'Lakers', teams: ['LAL'] },
@@ -24,7 +25,7 @@ export function Onboarding() {
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-[440px] flex-col px-5 pb-[max(24px,env(safe-area-inset-bottom))] pt-[max(28px,env(safe-area-inset-top))] md:max-w-[560px] lg:grid lg:max-w-[1080px] lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:items-center lg:gap-16 lg:px-10">
       <div className="flex flex-col">
-      <span className="font-display text-[26px] font-black">Tix<span className="text-[#FF6B47]">cast</span></span>
+      <Logo height={26} />
       <h1 className="font-display m-0 mt-8 text-[52px] font-black leading-[0.92] lg:mt-14 lg:text-[88px]">Buy now<br />or wait?</h1>
       <p className="m-0 mt-3 max-w-[32ch] text-[16px] leading-[1.5] text-sub">
         Tixcast watches resale prices for every LA home game and tells you when to buy.

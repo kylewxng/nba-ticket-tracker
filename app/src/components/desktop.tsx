@@ -9,6 +9,7 @@ import type { Game } from '@/lib/types'
 import { VERDICT_STYLE } from '@/lib/verdict'
 import { Sparkline, TeamStack, VerdictPill } from './kit'
 import { Avatar } from '@/screens/Home'
+import { Logo } from './Logo'
 
 /** Page width for every desktop screen. */
 export function Page({ children, className }: { children: ReactNode; className?: string }) {
@@ -47,8 +48,8 @@ export function TopBar() {
   return (
     <header className="sticky top-0 z-30 border-b border-[#1B2743] bg-[rgba(14,22,38,0.88)] backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-[1200px] items-center gap-8 px-8 xl:px-10">
-        <Link to="/" className="font-display text-[26px] font-black tracking-[0.01em] text-ink hover:text-ink">
-          Tix<span className="text-[#FF6B47]">cast</span>
+        <Link to="/" aria-label="Tixcast home" className="flex-none">
+          <Logo height={26} />
         </Link>
         <nav aria-label="Main" className="flex items-center gap-1">
           {NAV.map(({ to, label, end }) => (

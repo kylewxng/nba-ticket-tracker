@@ -8,6 +8,7 @@ import { useStore } from '@/lib/store'
 import { matchup } from '@/lib/teams'
 import type { Game } from '@/lib/types'
 import { bestCall } from '@/lib/verdict'
+import { Logo } from '@/components/Logo'
 
 export function Avatar({ size = 44 }: { size?: number }) {
   const { profile, email, signedIn, demo } = useStore()
@@ -69,9 +70,7 @@ export function HomeScreen() {
   return (
     <Screen className="gap-[22px]">
       <header className="flex items-center justify-between lg:hidden">
-        <span className="font-display text-[26px] font-black tracking-[0.01em]">
-          Tix<span className="text-[#FF6B47]">cast</span>
-        </span>
+        <Logo height={24} />
         <div className="flex gap-2">
           <BellButton unread={events.length > 0} />
           <Link to="/profile" aria-label="Your profile"><Avatar /></Link>
