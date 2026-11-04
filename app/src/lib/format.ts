@@ -59,3 +59,21 @@ export function dailyLows(history: { t: string; p: number }[], days: number): nu
   }
   return [...byDay.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([, v]) => v)
 }
+
+/** Change in the cheapest price over the last `days` days, as a fraction (0.08 = up 8%). */
+export function priceChange(history: { t: string; p: number }[], days: number): number | null {
+  if (history.length < 2) return null
+  const cutoff = Date.now() - days * 86400_000
+  let then: number | null = null
+  for (const pt of history) {
+    if (new Date(pt.t).getTime() <= cutoff) then = pt.p
+  }
+  then ??= history[0].p
+  const now = history[history.length - 1].p
+  return then ? now / then - 1 : null
+}
+
+export function pct(x: number): string {
+  const v = Math.round(x * 100)
+  return `${v > 0 ? '+' : v < 0 ? '−' : ''}${Math.abs(v)}%`
+}

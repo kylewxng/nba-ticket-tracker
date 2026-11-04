@@ -25,6 +25,7 @@ module.exports = {
           DEFAULT: "hsl(var(--destructive))",
           foreground: "hsl(var(--destructive-foreground))",
         },
+        page: "var(--page)",
         ink: "var(--ink)",
         sub: "var(--sub)",
         faint: "var(--muted)",

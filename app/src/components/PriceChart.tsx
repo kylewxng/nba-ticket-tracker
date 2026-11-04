@@ -1,22 +1,35 @@
-import { useMemo, useState, type PointerEvent } from 'react'
+import { useEffect, useMemo, useRef, useState, type PointerEvent } from 'react'
 import { money } from '@/lib/format'
 import type { Game } from '@/lib/types'
 import { VERDICT_STYLE } from '@/lib/verdict'
 
-const W = 350
-const H = 150
 const TOP = 18
-const BOTTOM = 128
-const TODAY_X = 210 // history fills the left 60%, the forecast the rest
 
 const dayFmt = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Los_Angeles', month: 'short', day: 'numeric' })
 const tipFmt = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Los_Angeles', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })
 
 export type ChartRange = 7 | 30 | 0
 
-export function PriceChart({ game, range }: { game: Game; range: ChartRange }) {
+/**
+ * Price history (left 60%) and the forecast band to tip-off (right 40%).
+ * Drawn at the container's real pixel width so labels stay 11px at any size.
+ */
+export function PriceChart({ game, range, height = 150, className = 'mt-[18px]' }: { game: Game; range: ChartRange; height?: number; className?: string }) {
   const [hover, setHover] = useState<number | null>(null)
+  const [W, setW] = useState(350)
+  const wrap = useRef<HTMLDivElement>(null)
   const style = VERDICT_STYLE[game.verdict]
+  const H = height
+  const BOTTOM = H - 22
+  const TODAY_X = Math.round(W * 0.6)
+
+  useEffect(() => {
+    const el = wrap.current
+    if (!el || typeof ResizeObserver === 'undefined') return
+    const ro = new ResizeObserver(([entry]) => setW(Math.max(240, Math.round(entry.contentRect.width))))
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
 
   const model = useMemo(() => {
     const cutoff = range ? Date.now() - range * 86400_000 : 0
@@ -48,11 +61,11 @@ export function PriceChart({ game, range }: { game: Game; range: ChartRange }) {
       return { y: y(v), label: money(v) }
     })
     return { xy, last, band, forecast, grid, start: pts[0].t }
-  }, [game, range])
+  }, [game, range, W, BOTTOM, TODAY_X])
 
   if (!model) {
     return (
-      <div className="mt-[18px] flex h-[150px] items-center justify-center rounded-2xl bg-inset px-6 text-center text-[13px] text-sub">
+      <div ref={wrap} style={{ height }} className={`${className} flex items-center justify-center rounded-2xl bg-inset px-6 text-center text-[13px] text-sub`}>
         The price chart fills in once Tixcast has a few days of listings for this game.
       </div>
     )
@@ -70,10 +83,12 @@ export function PriceChart({ game, range }: { game: Game; range: ChartRange }) {
   const tipX = h ? Math.min(Math.max(h.x, 40), W - 40) : 0
 
   return (
+    <div ref={wrap} className={className}>
     <svg
       viewBox={`0 0 ${W} ${H}`}
       width="100%"
-      className="mt-[18px] block touch-pan-y select-none"
+      height={H}
+      className="block touch-pan-y select-none"
       role="img"
       aria-label={`Cheapest ticket price history, now ${money(game.price_now)}${game.range_low != null ? `, ${game.range_label?.toLowerCase()} ${money(game.range_low)} to ${money(game.range_high)}` : ''}`}
       onPointerMove={onMove}
@@ -91,8 +106,8 @@ export function PriceChart({ game, range }: { game: Game; range: ChartRange }) {
       <line x1={TODAY_X} y1={TOP - 4} x2={TODAY_X} y2={BOTTOM + 4} stroke="#3A4A6E" strokeWidth="1" strokeDasharray="2 3" />
       <circle cx={model.last.x} cy={model.last.y} r="5" fill="#F4F6FA" stroke="#16213A" strokeWidth="2" />
       <text x={TODAY_X} y="10" textAnchor="middle" fontSize="11" fill="#A9B4CC" fontFamily="Public Sans, sans-serif">Today</text>
-      <text x="0" y="146" fontSize="11" fill="#8E9AB5" fontFamily="Public Sans, sans-serif">{dayFmt.format(new Date(model.start))}</text>
-      <text x={W} y="146" textAnchor="end" fontSize="11" fill="#8E9AB5" fontFamily="Public Sans, sans-serif">Tip-off {tipFmt.format(new Date(game.starts_at)).split(', ')[0]}</text>
+      <text x="0" y={H - 4} fontSize="11" fill="#8E9AB5" fontFamily="Public Sans, sans-serif">{dayFmt.format(new Date(model.start))}</text>
+      <text x={W} y={H - 4} textAnchor="end" fontSize="11" fill="#8E9AB5" fontFamily="Public Sans, sans-serif">Tip-off {tipFmt.format(new Date(game.starts_at)).split(', ')[0]}</text>
       {h && (
         <g pointerEvents="none">
           <line x1={h.x} y1={TOP - 4} x2={h.x} y2={BOTTOM} stroke="#F4F6FA" strokeOpacity="0.35" />
@@ -104,5 +119,6 @@ export function PriceChart({ game, range }: { game: Game; range: ChartRange }) {
         </g>
       )}
     </svg>
+    </div>
   )
 }

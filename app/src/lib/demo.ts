@@ -57,7 +57,10 @@ function history(seed: Seed, i: number, now: Date): PricePoint[] {
     // Slow swings plus a little noise, shaped like a real listing history.
     const swing = Math.sin(f * Math.PI * (2 + (i % 3))) * 0.035 * seed.price
     const noise = (r() - 0.5) * 0.012 * seed.price
-    const p = start + (seed.price - start) * f + (swing + noise) * (1 - f * 0.7)
+    // The last week leans the way the call says: up for Buy now, down for Wait.
+    const late = f > 0.75 ? (1 - f) / 0.25 : 1
+    const lean = { buy: -0.07, wait: 0.07, watch: -0.015 }[seed.verdict] * seed.price * late
+    const p = start + (seed.price - start) * f + (swing + noise) * (1 - f * 0.7) + (f > 0.5 ? lean : lean * (f / 0.5))
     pts.push({ t: new Date(now.getTime() - (n - 1 - k) * 6 * 3600_000).toISOString(), p: Math.max(8, Math.round(p)) })
   }
   pts[pts.length - 1].p = seed.price

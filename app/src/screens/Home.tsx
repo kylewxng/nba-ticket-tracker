@@ -23,7 +23,7 @@ export function Avatar({ size = 44 }: { size?: number }) {
   )
 }
 
-function lowNote(game: Game): string {
+export function lowNote(game: Game): string {
   const values = game.history.map((p) => p.p)
   const price = game.price_now ?? 0
   if (game.verdict === 'wait' && game.range_low != null) return `Forecast low ${money(game.range_low)}`

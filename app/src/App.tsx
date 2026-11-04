@@ -1,7 +1,14 @@
 import { useEffect } from 'react'
 import { BrowserRouter, HashRouter, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { Toaster } from 'sonner'
-import { SideNav, TabBar } from '@/components/layout'
+import { TabBar } from '@/components/layout'
+import { TopBar } from '@/components/desktop'
+import { useDesktop } from '@/lib/useDesktop'
+import { AlertsDesktop } from '@/screens/desktop/AlertsDesktop'
+import { ExploreDesktop } from '@/screens/desktop/ExploreDesktop'
+import { GameDesktop } from '@/screens/desktop/GameDesktop'
+import { HomeDesktop } from '@/screens/desktop/HomeDesktop'
+import { ProfileDesktop } from '@/screens/desktop/ProfileDesktop'
 import { USE_HASH_ROUTER } from '@/lib/config'
 import { StoreProvider, useStore } from '@/lib/store'
 import { AlertsScreen } from '@/screens/Alerts'
@@ -20,6 +27,7 @@ function Shell() {
   const location = useLocation()
   const navigate = useNavigate()
   const onTab = TAB_PATHS.includes(location.pathname)
+  const desktop = useDesktop()
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -34,10 +42,27 @@ function Shell() {
 
   if (!onboarded && location.pathname === '/') return <Onboarding />
 
+  if (desktop) {
+    return (
+      <>
+        <TopBar />
+        <Routes>
+          <Route path="/" element={<HomeDesktop />} />
+          <Route path="/explore" element={<ExploreDesktop />} />
+          <Route path="/alerts" element={<AlertsDesktop />} />
+          <Route path="/profile" element={<ProfileDesktop />} />
+          <Route path="/game/:id" element={<GameDesktop />} />
+          <Route path="/game/:id/alert" element={<GameDesktop alertOpen />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+        <SignInSheet />
+        <PushPrompt />
+      </>
+    )
+  }
+
   return (
     <>
-      <SideNav />
-      <div className="lg:pl-[248px]">
       <Routes>
         <Route path="/" element={<HomeScreen />} />
         <Route path="/explore" element={<ExploreScreen />} />
@@ -47,7 +72,6 @@ function Shell() {
         <Route path="/game/:id/alert" element={<GameScreen alertOpen />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-      </div>
       {onTab && <TabBar badge={events.length > 0} />}
       <SignInSheet />
       <PushPrompt />

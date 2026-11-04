@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react'
 import { NavLink } from 'react-router-dom'
 import { Bell, Home, Search, User } from 'lucide-react'
-import { useStore } from '@/lib/store'
 import { cn } from '@/lib/utils'
 
 const TABS = [
@@ -61,37 +60,3 @@ export function PageTitle({ children, sub }: { children: ReactNode; sub?: ReactN
   )
 }
 
-/** Desktop navigation: a fixed left rail. Hidden below 1024px, where the tab bar takes over. */
-export function SideNav() {
-  const { events, profile, email, signedIn, demo } = useStore()
-  const name = demo ? 'Demo mode' : signedIn ? profile.display_name || email || 'You' : 'Not signed in'
-  return (
-    <aside className="fixed inset-y-0 left-0 z-30 hidden w-[248px] flex-col border-r border-[#22304D] bg-[#111B2E] px-4 py-7 lg:flex">
-      <NavLink to="/" className="px-3 text-ink hover:text-ink">
-        <span className="font-display text-[30px] font-black tracking-[0.01em]">Tix<span className="text-[#FF6B47]">cast</span></span>
-      </NavLink>
-      <nav aria-label="Main" className="mt-8 flex flex-col gap-1">
-        {TABS.map(({ to, label, Icon, end }) => (
-          <NavLink
-            key={to}
-            to={to}
-            end={end}
-            className={({ isActive }) =>
-              cn('flex h-12 items-center gap-3 rounded-2xl px-3.5 text-[15px] font-semibold', isActive ? 'nav-on' : 'text-[#8E9AB5] hover:bg-[#16213A] hover:text-ink')
-            }
-          >
-            <Icon size={20} strokeWidth={1.9} aria-hidden="true" />
-            {label}
-            {label === 'Alerts' && events.length > 0 && (
-              <span className="ml-auto rounded-full bg-[#FF6B47] px-2 text-[12px] font-bold text-[#1A0E0A]">{events.length}</span>
-            )}
-          </NavLink>
-        ))}
-      </nav>
-      <div className="mt-auto rounded-2xl bg-[#16213A] p-3.5">
-        <p className="m-0 truncate text-[14px] font-semibold">{name}</p>
-        <p className="m-0 mt-0.5 text-[12px] text-sub">{profile.teams.map((t) => (t === 'LAL' ? 'Lakers' : 'Clippers')).join(' and ')}, {profile.ticket_count} ticket{profile.ticket_count === 1 ? '' : 's'}</p>
-      </div>
-    </aside>
-  )
-}

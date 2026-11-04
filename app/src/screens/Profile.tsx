@@ -185,13 +185,19 @@ export function ProfileScreen() {
 
       <HowItWorksSheet open={howOpen} onOpenChange={setHowOpen} />
       <FeedbackSheet open={feedbackOpen} onOpenChange={setFeedbackOpen} />
-      <Sheet open={privacyOpen} onOpenChange={setPrivacyOpen} title="Privacy and data">
+      <PrivacySheet open={privacyOpen} onOpenChange={setPrivacyOpen} />
+    </Screen>
+  )
+}
+
+export function PrivacySheet({ open, onOpenChange }: { open: boolean; onOpenChange: (o: boolean) => void }) {
+  return (
+    <Sheet open={open} onOpenChange={onOpenChange} title="Privacy and data">
         <div className="flex flex-col gap-3 pb-4 text-[15px] leading-[1.55] text-[#C9D2E3]">
           <p className="m-0">Tixcast stores your email, the games you watch, your alerts, and the devices you allow notifications on. That's it.</p>
           <p className="m-0">We don't sell your data or share it with ticket sellers. When you tap Buy, you leave Tixcast for the seller's site, and we may earn a referral fee at no cost to you.</p>
           <p className="m-0">To delete your account and everything in it, email hello@tixcast.app from the address you signed in with, or send a request from Help and feedback.</p>
         </div>
-      </Sheet>
-    </Screen>
+    </Sheet>
   )
 }

@@ -14,9 +14,9 @@ import { TeamStack } from '@/components/kit'
 import { AlertSheet } from './AlertSheet'
 import { HowItWorksSheet } from './HowItWorks'
 
-const SOURCE = { seatgeek: 'SeatGeek', ticketmaster: 'Ticketmaster' } as const
+export const SOURCE = { seatgeek: 'SeatGeek', ticketmaster: 'Ticketmaster' } as const
 
-function ReasonIcon({ reason }: { reason: Reason }) {
+export function ReasonIcon({ reason }: { reason: Reason }) {
   const color = VERDICT_STYLE[reason.tone].line
   const Icon =
     reason.kind === 'listings' ? (reason.tone === 'buy' ? TrendingDown : Users)
@@ -30,7 +30,7 @@ function ReasonIcon({ reason }: { reason: Reason }) {
   )
 }
 
-function TicketCount() {
+export function TicketCount() {
   const { profile, updateProfile } = useStore()
   return (
     <label className="glass relative flex h-10 items-center gap-1.5 rounded-full pl-3.5 pr-3 text-[14px] font-semibold">
