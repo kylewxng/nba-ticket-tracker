@@ -55,3 +55,10 @@ export function bestCall(games: Game[]): Game | null {
     .sort((a, b) => (1 - a.range_low! / a.price_now!) < (1 - b.range_low! / b.price_now!) ? 1 : -1)
   return waits[0] ?? null
 }
+
+/** A game has a real call once it has prices and enough history for odds. */
+export function hasCall(game: Game): boolean {
+  return game.price_now != null && game.odds_pct != null
+}
+
+export const EVENT_LABEL = { target_hit: 'Your price hit', buy_signal: 'Tixcast says Buy now', call_ready: 'First call is ready' } as const

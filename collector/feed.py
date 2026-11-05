@@ -213,8 +213,29 @@ def nearest(candidates: list[dict], nickname: str, starts_at: datetime, team_key
     return best
 
 
+CONTEXT_FIELDS = ("home_record", "away_record", "home_rest_days", "away_rest_days",
+                  "home_back_to_back", "away_back_to_back")
+
+
+def context_fields(ctx: dict | None) -> dict:
+    """Records and rest going into a game, from the game_context view."""
+    if not ctx:
+        return {}
+    def record(w, l):
+        return f"{int(w)}-{int(l)}" if w is not None and l is not None else None
+    return {
+        "home_record": record(ctx.get("home_wins_before"), ctx.get("home_losses_before")),
+        "away_record": record(ctx.get("away_wins_before"), ctx.get("away_losses_before")),
+        "home_rest_days": to_float(ctx.get("home_rest_days")),
+        "away_rest_days": to_float(ctx.get("away_rest_days")),
+        "home_back_to_back": ctx.get("home_back_to_back"),
+        "away_back_to_back": ctx.get("away_back_to_back"),
+    }
+
+
 def build_rows(nba: list[dict], sg_games: list[dict], sg_snaps: list[dict], tm_events: list[dict],
-               tm_snaps: list[dict], injuries: list[dict], now: datetime) -> list[dict]:
+               tm_snaps: list[dict], injuries: list[dict], now: datetime,
+               contexts: dict[str, dict] | None = None) -> list[dict]:
     snaps_by_sg: dict[int, list[Point]] = {}
     for s in sg_snaps:
         price = to_float(s.get("lowest_price"))
@@ -286,6 +307,7 @@ def build_rows(nba: list[dict], sg_games: list[dict], sg_snaps: list[dict], tm_e
             "injuries": game_injuries,
             "model": "rules-beta",
             "updated_at": now.isoformat(),
+            **context_fields((contexts or {}).get(g["game_id"])),
             **call,
         })
     return rows
@@ -329,7 +351,16 @@ def main() -> int:
     injuries = supabase_select(url, key, "injury_snapshots", {
         "captured_on": f"gte.{(now - timedelta(days=2)).date().isoformat()}"})
 
-    rows = build_rows(nba, sg_games, sg_snaps, tm_events, tm_snaps, injuries, now)
+    contexts: dict[str, dict] = {}
+    ids = [g["game_id"] for g in nba]
+    try:
+        for i in range(0, len(ids), 100):
+            for c in supabase_select(url, key, "game_context", {"game_id": f"in.({','.join(ids[i:i + 100])})"}):
+                contexts[c["game_id"]] = c
+    except RuntimeError as exc:
+        print(f"::warning::Skipping records and rest days: {exc}")
+
+    rows = build_rows(nba, sg_games, sg_snaps, tm_events, tm_snaps, injuries, now, contexts)
     priced = sum(1 for r in rows if r["price_now"] is not None)
     print(f"{len(rows)} upcoming LA home games, {priced} with prices "
           f"({sum(r['verdict'] == 'buy' for r in rows)} buy, {sum(r['verdict'] == 'wait' for r in rows)} wait).")
@@ -338,7 +369,15 @@ def main() -> int:
     if args.dry_run:
         print(json.dumps(rows[:3], indent=2, default=str))
         return 0
-    supabase_upsert(url, key, "app_games", rows, on_conflict="game_id")
+    try:
+        supabase_upsert(url, key, "app_games", rows, on_conflict="game_id")
+    except RuntimeError as exc:
+        if "PGRST204" not in str(exc):
+            raise
+        # sql/game-day.sql hasn't been run yet: write the feed without the new columns.
+        print("::warning::app_games is missing the game-day columns. Run sql/game-day.sql in Supabase.")
+        supabase_upsert(url, key, "app_games", [{k: v for k, v in r.items() if k not in CONTEXT_FIELDS} for r in rows],
+                        on_conflict="game_id")
     supabase_delete(url, key, "app_games", {"starts_at": f"lt.{(now - timedelta(days=2)).isoformat()}"})
     return 0
 

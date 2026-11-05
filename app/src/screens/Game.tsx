@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { GameDay, NoCallYet } from '@/components/GameDay'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Bell, Bookmark, CalendarDays, ChevronDown, ExternalLink, HeartPulse, Share, TrendingDown, TrendingUp, Users } from 'lucide-react'
 import { toast } from 'sonner'
@@ -9,7 +10,7 @@ import { useStore } from '@/lib/store'
 import { matchup, teamName } from '@/lib/teams'
 import type { Game, Reason } from '@/lib/types'
 import { cn } from '@/lib/utils'
-import { VERDICT_STYLE } from '@/lib/verdict'
+import { VERDICT_STYLE, hasCall } from '@/lib/verdict'
 import { TeamStack } from '@/components/kit'
 import { AlertSheet } from './AlertSheet'
 import { HowItWorksSheet } from './HowItWorks'
@@ -60,7 +61,11 @@ function Verdict({ game }: { game: Game }) {
       <div className="mt-[18px] flex items-end justify-between gap-3">
         <div>
           <p className="m-0 text-[12px] text-sub">Cheapest ticket right now</p>
-          <div className="font-display tabular mt-1 text-[64px] font-black leading-[0.9]">{money(game.price_now)}</div>
+          {game.price_now != null ? (
+            <div className="font-display tabular mt-1 text-[64px] font-black leading-[0.9]">{money(game.price_now)}</div>
+          ) : (
+            <p className="m-0 mt-1 text-[17px] font-semibold text-sub">No listings yet</p>
+          )}
           {total != null && profile.ticket_count > 1 && (
             <p className="m-0 mt-1.5 text-[12px] text-sub">About {money(total)} for {profile.ticket_count}, before checkout fees</p>
           )}
@@ -197,6 +202,7 @@ export function GameScreen({ alertOpen = false }: { alertOpen?: boolean }) {
 
         <div className="flex flex-col gap-5 lg:grid lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] lg:items-start lg:gap-8">
         <Verdict game={game} />
+        {!hasCall(game) && <NoCallYet watching={watching} onWatch={onWatch} />}
 
         <div className="flex flex-col gap-5">
         <div className="hidden grid-cols-[minmax(0,1fr)_minmax(0,1.35fr)] gap-2.5 lg:grid">{actions}</div>
@@ -210,6 +216,13 @@ export function GameScreen({ alertOpen = false }: { alertOpen?: boolean }) {
               </div>
             ))}
           </div>
+        )}
+
+        {(game.home_record != null || game.national_tv) && (
+          <section aria-labelledby="gameday-title">
+            <h2 id="gameday-title" className="m-0 mb-2 text-[17px] font-bold">Game day</h2>
+            <div className="glass rounded-2xl px-4 pb-1 pt-3"><GameDay game={game} /></div>
+          </section>
         )}
 
         {game.reasons.length > 0 && (

@@ -38,6 +38,12 @@ export interface Game {
   injuries: Injury[]
   model: string
   updated_at: string
+  home_record?: string | null
+  away_record?: string | null
+  home_rest_days?: number | null
+  away_rest_days?: number | null
+  home_back_to_back?: boolean | null
+  away_back_to_back?: boolean | null
 }
 
 export interface Profile {
@@ -66,7 +72,7 @@ export interface Alert {
 export interface AlertEvent {
   id: string
   game_id: string
-  kind: 'target_hit' | 'buy_signal'
+  kind: 'target_hit' | 'buy_signal' | 'call_ready'
   price: number | null
   message: string | null
   created_at: string

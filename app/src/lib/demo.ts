@@ -134,6 +134,12 @@ function build(seed: Seed, i: number, now: Date): Game {
     reasons: reasons.slice(0, 3),
     injuries,
     model: 'rules-beta',
+    home_record: seed.home === 'LAL' ? '4-3' : '5-2',
+    away_record: ['3-4', '6-1', '2-5', '4-3', '5-2'][i % 5],
+    home_rest_days: i % 4 === 1 ? 1 : [2, 3, 2, 4][i % 4],
+    away_rest_days: i % 3 === 0 ? 1 : [3, 2, 2][i % 3],
+    home_back_to_back: i % 4 === 1,
+    away_back_to_back: i % 3 === 0,
     updated_at: new Date(now.getTime() - 14 * 60_000).toISOString(),
     headline: null, odds_label: null, odds_pct: null, risk_label: null, risk_pct: null,
     range_label: null, range_low: null, range_high: null,
@@ -141,6 +147,17 @@ function build(seed: Seed, i: number, now: Date): Game {
   }
 }
 
+/** A game far enough out that resale listings haven't started: no price, no call. */
+function tracking(now: Date): Game {
+  const base = build({ away: 'OKC', home: 'LAC', days: 58, hourPT: 19.5, price: 1, verdict: 'watch', trend: 0, listings: 0 }, 10, now)
+  return {
+    ...base,
+    price_now: null, price_source: null, listing_count: null, history: [], reasons: [],
+    headline: 'No resale prices yet', odds_label: null, odds_pct: null, risk_label: null, risk_pct: null,
+    range_label: null, range_low: null, range_high: null,
+  }
+}
+
 export function demoGames(now = new Date()): Game[] {
-  return SEEDS.map((s, i) => build(s, i, now))
+  return [...SEEDS.map((s, i) => build(s, i, now)), tracking(now)]
 }

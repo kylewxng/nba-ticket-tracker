@@ -91,3 +91,24 @@ def test_compose_mentions_price_and_matchup():
     title, body = compose("target_hit", game(120), {"target_price": 125})
     assert title == "Warriors at Lakers hit your price"
     assert "$120" in body and "$125" in body
+
+
+def test_first_call_needs_price_and_odds():
+    from alerts import compose_call_ready, has_call
+    g = game(120, "wait")
+    assert not has_call(g)
+    g["odds_pct"] = 66
+    assert has_call(g)
+    title, body = compose_call_ready({**g, "headline": "Likely to get cheaper before tip-off."})
+    assert title == "First call for Warriors at Lakers: Wait"
+    assert "$120" in body
+
+
+def test_context_fields_format_records_and_rest():
+    from feed import context_fields
+    out = context_fields({"home_wins_before": 5, "home_losses_before": 3, "away_wins_before": 0,
+                          "away_losses_before": 0, "home_rest_days": 1.0, "away_rest_days": 3.5,
+                          "home_back_to_back": True, "away_back_to_back": False})
+    assert out["home_record"] == "5-3" and out["away_record"] == "0-0"
+    assert out["home_back_to_back"] is True and out["away_rest_days"] == 3.5
+    assert context_fields(None) == {}

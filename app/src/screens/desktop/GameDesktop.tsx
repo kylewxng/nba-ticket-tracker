@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { GameDay, NoCallYet } from '@/components/GameDay'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Bell, Bookmark, ChevronLeft, ExternalLink, Share } from 'lucide-react'
 import { Page, Panel, Segmented, Stat } from '@/components/desktop'
@@ -9,7 +10,7 @@ import { useGameActions } from '@/lib/gameActions'
 import { useStore } from '@/lib/store'
 import { matchup, teamName } from '@/lib/teams'
 import { cn } from '@/lib/utils'
-import { VERDICT_STYLE } from '@/lib/verdict'
+import { VERDICT_STYLE, hasCall } from '@/lib/verdict'
 import { AlertSheet } from '../AlertSheet'
 import { ReasonIcon, SOURCE, TicketCount } from '../Game'
 import { HowItWorksSheet } from '../HowItWorks'
@@ -120,7 +121,11 @@ export function GameDesktop({ alertOpen = false }: { alertOpen?: boolean }) {
                 <div>
                   <p className="m-0 text-[13px] text-sub">Cheapest ticket right now</p>
                   <div className="mt-1 flex items-baseline gap-3">
-                    <span className="font-display tabular text-[72px] font-black leading-[0.85]">{money(game.price_now)}</span>
+                    {hasPrice ? (
+                      <span className="font-display tabular text-[72px] font-black leading-[0.85]">{money(game.price_now)}</span>
+                    ) : (
+                      <span className="text-[20px] font-semibold text-sub">No listings yet</span>
+                    )}
                     {change7 != null && hasPrice && (
                       <span className={cn('tabular text-[14px] font-semibold', change7 > 0.005 ? 'text-[#FF8A6B]' : change7 < -0.005 ? 'text-[#9CC4FF]' : 'text-sub')}>{pct(change7)} this week</span>
                     )}
@@ -175,6 +180,7 @@ export function GameDesktop({ alertOpen = false }: { alertOpen?: boolean }) {
             <Panel title="The call">
               {hasPrice ? <VerdictPill verdict={game.verdict} size="lg" /> : <span className="font-display rounded-lg bg-[#1E2B48] px-3 py-1 text-[18px] font-extrabold tracking-[0.03em] text-sub">TRACKING</span>}
               <p className="m-0 mt-3 text-[20px] font-bold leading-[1.3]">{game.headline ?? 'No resale prices yet'}</p>
+              {!hasCall(game) && <div className="mt-4"><NoCallYet compact watching={actions.watching} onWatch={actions.onWatch} /></div>}
               {game.odds_pct != null && (
                 <div className="mt-6 flex flex-col gap-5">
                   <OddsRow label={game.odds_label ?? ''} value={game.odds_pct} color={accent} />
@@ -191,6 +197,10 @@ export function GameDesktop({ alertOpen = false }: { alertOpen?: boolean }) {
                 <button type="button" onClick={() => setHowOpen(true)} className="font-semibold text-link">How forecasts work</button>
               </p>
             </Panel>
+
+            {(game.home_record != null || game.national_tv) && (
+              <Panel title="Game day"><GameDay game={game} /></Panel>
+            )}
 
             <Panel title="Injury report" pad={false}>
               {game.injuries.length ? (

@@ -7,7 +7,7 @@ import { useStore } from '@/lib/store'
 import { matchup } from '@/lib/teams'
 import type { Alert, AlertEvent, Game } from '@/lib/types'
 import { cn } from '@/lib/utils'
-import { VERDICT_LABEL, VERDICT_STYLE, chanceToHit } from '@/lib/verdict'
+import { EVENT_LABEL, VERDICT_LABEL, VERDICT_STYLE, chanceToHit } from '@/lib/verdict'
 
 function ReadyStub({ event, game }: { event: AlertEvent; game: Game }) {
   const { dismissEvent } = useStore()
@@ -15,7 +15,7 @@ function ReadyStub({ event, game }: { event: AlertEvent; game: Game }) {
   return (
     <article className="relative flex flex-col overflow-hidden rounded-[18px] bg-[#FF6B47] p-5 text-[#1A0E0A]">
       <div className="flex items-center justify-between text-[12px] font-bold">
-        <span>{event.kind === 'buy_signal' ? 'Tixcast says Buy now' : 'Your price hit'}</span>
+        <span>{EVENT_LABEL[event.kind]}</span>
         <span className="font-semibold">{ago(event.created_at)}</span>
       </div>
       <div className="mt-3 flex items-end justify-between gap-3">

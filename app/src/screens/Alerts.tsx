@@ -6,7 +6,7 @@ import { ago, gameWhen, money } from '@/lib/format'
 import { useStore } from '@/lib/store'
 import { matchup } from '@/lib/teams'
 import type { Alert, AlertEvent, Game } from '@/lib/types'
-import { VERDICT_LABEL, VERDICT_STYLE, chanceToHit } from '@/lib/verdict'
+import { EVENT_LABEL, VERDICT_LABEL, VERDICT_STYLE, chanceToHit } from '@/lib/verdict'
 
 function ReadyCard({ event, game }: { event: AlertEvent; game: Game }) {
   const { dismissEvent } = useStore()
@@ -15,7 +15,7 @@ function ReadyCard({ event, game }: { event: AlertEvent; game: Game }) {
     <section aria-label={`Alert: ${matchup(game)}`} className="buy-fill rounded-[22px] px-[18px] py-4">
       <div className="flex items-center gap-2">
         <Bell size={18} strokeWidth={2.2} aria-hidden="true" />
-        <h2 className="m-0 text-[14px] font-bold">{event.kind === 'buy_signal' ? 'Tixcast says Buy now' : 'Your price hit'}</h2>
+        <h2 className="m-0 text-[14px] font-bold">{EVENT_LABEL[event.kind]}</h2>
         <span className="ml-auto text-[12px] font-semibold">{ago(event.created_at)}</span>
       </div>
       <div className="mt-2.5 flex items-end justify-between gap-3">

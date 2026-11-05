@@ -160,7 +160,7 @@ begin
   insert into profiles (user_id, display_name, founding_member)
   values (
     new.id,
-    coalesce(new.raw_user_meta_data->>'full_name', split_part(new.email, '@', 1)),
+    left(split_part(new.email, '@', 1), 30),
     (select count(*) from profiles) < 100
   )
   on conflict (user_id) do nothing;

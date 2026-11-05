@@ -65,7 +65,7 @@ export function PriceChart({ game, range, height = 150, className = 'mt-[18px]' 
 
   if (!model) {
     return (
-      <div ref={wrap} style={{ height }} className={`${className} flex items-center justify-center rounded-2xl bg-inset px-6 text-center text-[13px] text-sub`}>
+      <div ref={wrap} style={{ height: Math.min(height, 170) }} className={`${className} flex items-center justify-center rounded-2xl bg-inset px-6 text-center text-[13px] text-sub`}>
         The price chart fills in once Tixcast has a few days of listings for this game.
       </div>
     )

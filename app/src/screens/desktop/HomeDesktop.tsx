@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { EVENT_LABEL } from '@/lib/verdict'
 import { Link } from 'react-router-dom'
 import { GamesTable, Page, Panel, Segmented } from '@/components/desktop'
 import { Skeleton } from '@/components/kit'
@@ -34,7 +35,7 @@ function AlertsPanel() {
             <li key={e.id} className="border-b border-[#1B2743]">
               <Link to={`/game/${g!.game_id}`} className="flex items-center justify-between gap-3 bg-[rgba(255,107,71,0.1)] px-5 py-3.5 text-ink hover:text-ink">
                 <div className="min-w-0">
-                  <p className="m-0 text-[12px] font-bold text-[#FF8A6B]">{e.kind === 'buy_signal' ? 'Tixcast says Buy now' : 'Hit your price'}</p>
+                  <p className="m-0 text-[12px] font-bold text-[#FF8A6B]">{EVENT_LABEL[e.kind]}</p>
                   <p className="m-0 truncate text-[14px] font-semibold">{matchup(g!)}</p>
                 </div>
                 <span className="font-display tabular text-[24px] font-extrabold">{money(g!.price_now ?? e.price)}</span>

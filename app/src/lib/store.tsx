@@ -317,9 +317,17 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       return next
     })
     if (supabase && userId) {
-      const { error } = on
-        ? await supabase.from('watches').upsert({ user_id: userId, game_id: gameId })
-        : await supabase.from('watches').delete().eq('game_id', gameId)
+      let error
+      if (on) {
+        // Games that already have a call don't need a "first call is ready" alert later.
+        const game = games?.find((g) => g.game_id === gameId)
+        const already = game && game.price_now != null && game.odds_pct != null
+        const row = { user_id: userId, game_id: gameId, ...(already ? { call_notified_at: new Date().toISOString() } : {}) }
+        ;({ error } = await supabase.from('watches').upsert(row))
+        if (error?.code === 'PGRST204') ({ error } = await supabase.from('watches').upsert({ user_id: userId, game_id: gameId }))
+      } else {
+        ;({ error } = await supabase.from('watches').delete().eq('game_id', gameId))
+      }
       if (error) {
         setWatches((prev) => {
           const next = new Set(prev)
@@ -334,7 +342,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     toast(on ? 'Watching this game' : 'Stopped watching', {
       description: on ? "It's on Home now. Set an alert to hear when the price moves." : undefined,
     })
-  }, [watches, userId])
+  }, [watches, userId, games])
 
   // ---- alerts --------------------------------------------------------------
   const alertFor = useCallback((gameId: string) => alerts.find((a) => a.game_id === gameId), [alerts])
